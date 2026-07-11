@@ -1,0 +1,239 @@
+{
+  "nav": {
+    "inicio": "Inicio",
+    "reservar": "Reservar"
+  },
+  "hero": {
+    "titulo": "EjiXhole",
+    "eslogan": "Naturaleza que se vive",
+    "subtitulo": "Parque Ecoturístico en la Huasteca Potosina",
+    "descripcion": "680 hectáreas con ribera de río en El Naranjo, S.L.P. Cascadas, camping, cabañas y aventura en contacto con la naturaleza.",
+    "boton": "Reservar mi visita",
+    "botonSecundario": "Explorar actividades",
+    "calificacion": "(23 opiniones en Google)",
+    "insignias": {
+      "naturaleza": "Naturaleza viva",
+      "aventura": "Aventura real",
+      "agua": "Agua turquesa",
+      "momentos": "Momentos únicos"
+    }
+  },
+  "fauna": {
+    "titulo": "Fauna de EjiXhole",
+    "descripcion": "EjiXhole se encuentra en el municipio de El Naranjo, en el corazón de la Huasteca Potosina, una región con gran diversidad de vida silvestre. Durante tu visita podrías observar especies como:",
+    "categorias": {
+      "mamiferos": "Mamíferos",
+      "aves": "Aves",
+      "reptiles": "Reptiles y anfibios"
+    },
+    "aviso": "La fauna vive en libertad, por lo que cada avistamiento depende de la temporada, el clima y el comportamiento natural de los animales. Nuestro compromiso es respetar y conservar su hábitat."
+  },
+  "historia": {
+    "historia": {
+      "titulo": "Nuestra historia",
+      "texto": "EjiXhole nació como una Reserva Natural y Parque Ecoturístico con un propósito claro: compartir la belleza de El Naranjo con quienes buscan una experiencia auténtica en contacto con la naturaleza. Más que un destino turístico, somos un espacio donde familias, amigos y aventureros se desconectan de la rutina, disfrutan del río y las cascadas, y se llevan recuerdos que perduran — siempre con respeto por el entorno que nos recibe."
+    },
+    "mision": {
+      "titulo": "Nuestra misión",
+      "texto": "Brindar experiencias ecoturísticas memorables a través de un servicio cálido, seguro y responsable, impulsando el turismo sustentable y el cuidado de la naturaleza en la Huasteca Potosina."
+    },
+    "conservacion": {
+      "titulo": "Conservación",
+      "items": [
+        "No dejar basura.",
+        "Respetar la flora y fauna.",
+        "Permanecer en las áreas permitidas.",
+        "Evitar alimentar animales silvestres.",
+        "Cuidar el agua y los senderos.",
+        "Disfrutar del entorno con responsabilidad."
+      ]
+    }
+  },
+  "descubre": {
+    "titulo": "Descubre El Naranjo",
+    "descripcion": "Si visitas EjiXhole, también puedes conocer algunos de los principales atractivos de la región.",
+    "items": {
+      "elMeco": {
+        "titulo": "Cascada El Meco",
+        "texto": "Una de las cascadas más impresionantes de la Huasteca Potosina, famosa por su gran caída de agua y sus paisajes espectaculares."
+      },
+      "elSalto": {
+        "titulo": "Cascada El Salto",
+        "texto": "Un hermoso paraje natural ideal para disfrutar del río y admirar una de las cascadas más conocidas del municipio."
+      },
+      "rutaTurquesa": {
+        "titulo": "Ruta Turquesa de El Naranjo",
+        "texto": "El municipio forma parte de la famosa Ruta Turquesa de la Huasteca Potosina, reconocida por sus ríos cristalinos, cascadas y actividades de ecoturismo como kayak, senderismo y observación de aves."
+      }
+    }
+  },
+  "queIncluye": {
+    "titulo": "¿Qué incluye tu visita?",
+    "descripcion": "Todo esto forma parte de tu entrada al parque.",
+    "items": {
+      "naturaleza": "680 hectáreas de naturaleza",
+      "rio": "Ribera de río",
+      "cascadas": "Cascadas",
+      "guias": "Guías turísticos",
+      "estacionamiento": "Estacionamiento",
+      "banos": "Baños y regaderas"
+    }
+  },
+  "actividades": {
+    "titulo": "Actividades en el parque",
+    "nota": "Estas actividades se contratan directamente en el parque, sujeto a disponibilidad — no se reservan en línea.",
+    "porPersona": "por persona",
+    "categorias": {
+      "agua": "En el agua",
+      "tierra": "En tierra",
+      "servicios": "Servicios adicionales"
+    }
+  },
+  "galeria": {
+    "titulo": "Descubre la magia de EjiXhole",
+    "descripcion": "Momentos reales de quienes ya nos visitaron.",
+    "categorias": {
+      "todas": "Todas",
+      "rio": "Río",
+      "cascadas": "Cascadas",
+      "camping": "Camping",
+      "actividades": "Actividades",
+      "visitantes": "Visitantes"
+    }
+  },
+  "comida": {
+    "titulo": "Alimentos y bebidas",
+    "aviso": "Por el momento no contamos con restaurante — te recomendamos traer tus alimentos y provisiones. La tienda más cercana está a 15-20 minutos del parque."
+  },
+  "clima": {
+    "titulo": "Clima",
+    "real": "Pronóstico real",
+    "historico": "Promedio histórico para esta época del año",
+    "cargando": "Consultando el clima...",
+    "error": "No se pudo cargar el clima en este momento."
+  },
+  "mapa": {
+    "titulo": "Cómo llegar",
+    "descripcion": "Sigue el camino y déjate sorprender por el paisaje.",
+    "abrirGoogleMaps": "Abrir en Google Maps",
+    "caminoTitulo": "Sobre el camino",
+    "caminoTexto": "El tramo final es de terracería — parte de la aventura empieza antes de llegar. Es apto para automóviles, camionetas y combis; revisa la ruta en Maps antes de salir.",
+    "tiemposTitulo": "Tiempo aproximado desde",
+    "tiemposAviso": "Estimado, sin tráfico. Verifica tu ruta exacta en Google Maps antes de salir."
+  },
+  "reservar": {
+    "paso1": "Tipo y fechas",
+    "paso2": "Tus datos",
+    "paso3": "Confirmación",
+    "tipo": {
+      "titulo": "¿Qué te gustaría reservar?",
+      "entrada": "Visita de un día",
+      "entradaDesc": "Entrada al parque, sin hospedaje",
+      "camping": "Camping",
+      "campingDesc": "Zona de acampar, sin límite de espacio",
+      "hospedaje": "Habitación o cabaña",
+      "hospedajeDesc": "2 habitaciones y 1 cabaña disponibles, hasta 4 personas c/u"
+    },
+    "fechaLlegada": "Fecha de llegada",
+    "fechaSalida": "Fecha de salida",
+    "fecha": "Fecha de visita",
+    "numPersonas": "Número de personas",
+    "elegirUnidad": "Elige tu habitación o cabaña",
+    "proximamente": "Próximamente disponible",
+    "maximoPersonas": "Máximo {{max}} personas",
+    "excedeCapacidad": "Esta unidad admite máximo {{max}} personas. Si son más, reserva esta unidad para el grupo que quepa y haz una reservación de Camping aparte para el resto.",
+    "avisoGrupoGrande": "Cada habitación/cabaña tiene un límite de personas. Si tu grupo es más grande, reserva la unidad para quienes quepan y agrega una reservación de Camping aparte para los demás — el camping no tiene límite de personas.",
+    "verificandoDisponibilidad": "Verificando disponibilidad...",
+    "disponible": "Disponible",
+    "noDisponible": "No disponible en esas fechas",
+    "resumen": "Resumen",
+    "total": "Total",
+    "noches": "noches",
+    "avisoNoReembolsable": "Esta reserva no es reembolsable si no asistes el día correspondiente.",
+    "continuar": "Continuar",
+    "atras": "Atrás",
+    "nombreCompleto": "Nombre completo",
+    "email": "Correo electrónico",
+    "telefono": "Número de teléfono",
+    "notas": "Notas adicionales (opcional)",
+    "enviarSolicitud": "Enviar solicitud",
+    "enviando": "Enviando...",
+    "combi": {
+      "descripcion": "Si necesitas que te ayudemos a coordinar una combi para tu viaje, marca esta casilla y nos pondremos en contacto contigo para cotizar disponibilidad y costo.",
+      "checkbox": "Sí, quiero información sobre transporte en combi"
+    }
+  },
+  "confirmacion": {
+    "titulo": "¡Solicitud recibida!",
+    "folio": "Folio",
+    "detalles": "Detalles de tu solicitud",
+    "volverInicio": "Volver al inicio"
+  },
+  "errores": {
+    "generico": "Ocurrió un error. Por favor intenta de nuevo.",
+    "campoRequerido": "Este campo es obligatorio",
+    "emailInvalido": "Correo electrónico inválido"
+  },
+  "ctaConversion": {
+    "titulo": "Únete a quienes ya vivieron EjiXhole",
+    "descripcion": "Lee sus experiencias reales arriba — ahora es tu turno de vivirlo."
+  },
+  "resenas": {
+    "titulo": "Lo que dicen nuestros visitantes",
+    "opiniones": "opiniones en Google Maps",
+    "verTodas": "Ver todas las opiniones"
+  },
+  "consejos": {
+    "titulo": "Consejos para tu visita",
+    "tituloPrep": "Prepárate para tu aventura",
+    "descripcionPrep": "Todo lo que te recomendamos llevar, según quienes ya nos visitaron.",
+    "prep": {
+      "agua": "Agua para hidratarte",
+      "sol": "Protector solar",
+      "calzado": "Calzado antiderrapante",
+      "camara": "Cámara o celular",
+      "repelente": "Repelente de insectos"
+    },
+    "descripcion": "Recomendaciones reales de quienes ya nos visitaron.",
+    "items": [
+      "Se recomienda visitar de noviembre a abril para apreciar el tono azul turquesa del río.",
+      "La zona de acampada es la opción de hospedaje más económica del parque.",
+      "El parque tiene cupo limitado en temporada alta — se sugiere llegar temprano."
+    ]
+  },
+  "timeline": {
+    "titulo": "Así se vive EjiXhole",
+    "descripcion": "Tu experiencia, paso a paso.",
+    "pasos": {
+      "reserva": { "numero": "Paso 1", "titulo": "Reserva", "descripcion": "Elige tu fecha y tipo de visita en línea." },
+      "llegada": { "numero": "Paso 2", "titulo": "Llegada", "descripcion": "Sigue el camino hasta El Naranjo, S.L.P." },
+      "checkin": { "numero": "Paso 3", "titulo": "Check-in", "descripcion": "Te recibimos y confirmamos tu reservación." },
+      "actividades": { "numero": "Paso 4", "titulo": "Actividades", "descripcion": "Vive cascadas, río y aventura." },
+      "fotografias": { "numero": "Paso 5", "titulo": "Fotografías", "descripcion": "Captura los momentos que querrás recordar." },
+      "regreso": { "numero": "Paso 6", "titulo": "Regreso", "descripcion": "Te vas con la energía renovada." }
+    }
+  },
+  "cierre": {
+    "frase": "Tu aventura comienza aquí.",
+    "subtexto": "El río, las cascadas y la Huasteca Potosina te están esperando."
+  },
+  "faq": {
+    "titulo": "Preguntas frecuentes",
+    "descripcion": "Lo que más nos preguntan nuestros visitantes.",
+    "verMas": "Ver más preguntas",
+    "verMenos": "Ver menos"
+  },
+  "footer": {
+    "descripcion": "Naturaleza, aventura y tranquilidad en el corazón de la Huasteca Potosina.",
+    "siguenos": "Síguenos y descubre EjiXhole",
+    "ubicacion": "El Naranjo, San Luis Potosí, México",
+    "derechos": "Todos los derechos reservados.",
+    "contacto": "Contacto",
+    "horario": "Horario",
+    "horarioValor": "Lunes a domingo, 8:00 a.m. – 7:00 p.m."
+  },
+  "notFound": {
+    "titulo": "Página no encontrada",
+    "boton": "Volver al inicio"
+  }
+}

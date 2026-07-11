@@ -1,0 +1,239 @@
+{
+  "nav": {
+    "inicio": "Home",
+    "reservar": "Book Now"
+  },
+  "hero": {
+    "titulo": "EjiXhole",
+    "eslogan": "Nature you live",
+    "subtitulo": "Ecotourism Park in the Huasteca Potosina",
+    "descripcion": "680 hectares along the river in El Naranjo, S.L.P. Waterfalls, camping, cabins, and adventure surrounded by nature.",
+    "boton": "Book my visit",
+    "botonSecundario": "Explore activities",
+    "calificacion": "(23 reviews on Google)",
+    "insignias": {
+      "naturaleza": "Living nature",
+      "aventura": "Real adventure",
+      "agua": "Turquoise water",
+      "momentos": "Unique moments"
+    }
+  },
+  "fauna": {
+    "titulo": "Wildlife at EjiXhole",
+    "descripcion": "EjiXhole is located in the municipality of El Naranjo, in the heart of the Huasteca Potosina, a region with great wildlife diversity. During your visit you might spot species such as:",
+    "categorias": {
+      "mamiferos": "Mammals",
+      "aves": "Birds",
+      "reptiles": "Reptiles and amphibians"
+    },
+    "aviso": "Wildlife lives freely, so every sighting depends on the season, weather, and the animals' natural behavior. We're committed to respecting and preserving their habitat."
+  },
+  "historia": {
+    "historia": {
+      "titulo": "Our story",
+      "texto": "EjiXhole was born as a Nature Reserve and Ecotourism Park with a clear purpose: to share the beauty of El Naranjo with those seeking an authentic connection with nature. More than a tourist destination, we're a place where families, friends, and adventurers disconnect from routine, enjoy the river and waterfalls, and take home memories that last — always with respect for the land that welcomes them."
+    },
+    "mision": {
+      "titulo": "Our mission",
+      "texto": "To deliver memorable ecotourism experiences through warm, safe, and responsible service, driving sustainable tourism and care for the nature of the Huasteca Potosina."
+    },
+    "conservacion": {
+      "titulo": "Conservation",
+      "items": [
+        "Don't leave trash behind.",
+        "Respect the flora and fauna.",
+        "Stay within permitted areas.",
+        "Avoid feeding wild animals.",
+        "Take care of the water and trails.",
+        "Enjoy the environment responsibly."
+      ]
+    }
+  },
+  "descubre": {
+    "titulo": "Discover El Naranjo",
+    "descripcion": "If you visit EjiXhole, you can also explore some of the region's main attractions.",
+    "items": {
+      "elMeco": {
+        "titulo": "El Meco Waterfall",
+        "texto": "One of the most impressive waterfalls in the Huasteca Potosina, known for its dramatic drop and spectacular scenery."
+      },
+      "elSalto": {
+        "titulo": "El Salto Waterfall",
+        "texto": "A beautiful natural spot to enjoy the river and admire one of the municipality's best-known waterfalls."
+      },
+      "rutaTurquesa": {
+        "titulo": "El Naranjo's Turquoise Route",
+        "texto": "The municipality is part of the famous Turquoise Route of the Huasteca Potosina, known for its crystal-clear rivers, waterfalls, and ecotourism activities like kayaking, hiking, and birdwatching."
+      }
+    }
+  },
+  "queIncluye": {
+    "titulo": "What's included in your visit?",
+    "descripcion": "All of this is part of your park entrance.",
+    "items": {
+      "naturaleza": "680 hectares of nature",
+      "rio": "Riverbank",
+      "cascadas": "Waterfalls",
+      "guias": "Tour guides",
+      "estacionamiento": "Parking",
+      "banos": "Restrooms and showers"
+    }
+  },
+  "actividades": {
+    "titulo": "Activities at the park",
+    "nota": "These activities are booked directly at the park, subject to availability — they are not booked online.",
+    "porPersona": "per person",
+    "categorias": {
+      "agua": "On the water",
+      "tierra": "On land",
+      "servicios": "Additional services"
+    }
+  },
+  "galeria": {
+    "titulo": "Discover the magic of EjiXhole",
+    "descripcion": "Real moments from the people who've already visited.",
+    "categorias": {
+      "todas": "All",
+      "rio": "River",
+      "cascadas": "Waterfalls",
+      "camping": "Camping",
+      "actividades": "Activities",
+      "visitantes": "Visitors"
+    }
+  },
+  "comida": {
+    "titulo": "Food and drinks",
+    "aviso": "We don't have a restaurant yet — we recommend bringing your own food and supplies. The nearest store is 15-20 minutes from the park."
+  },
+  "clima": {
+    "titulo": "Weather",
+    "real": "Real forecast",
+    "historico": "Historical average for this time of year",
+    "cargando": "Checking the weather...",
+    "error": "Couldn't load the weather right now."
+  },
+  "mapa": {
+    "titulo": "How to get there",
+    "descripcion": "Follow the road and let the scenery surprise you.",
+    "abrirGoogleMaps": "Open in Google Maps",
+    "caminoTitulo": "About the road",
+    "caminoTexto": "The final stretch is a dirt road — part of the adventure starts before you arrive. It's suitable for cars, pickup trucks, and vans; check your route on Maps before heading out.",
+    "tiemposTitulo": "Approximate time from",
+    "tiemposAviso": "Estimated, no traffic. Check your exact route on Google Maps before heading out."
+  },
+  "reservar": {
+    "paso1": "Type and dates",
+    "paso2": "Your info",
+    "paso3": "Confirmation",
+    "tipo": {
+      "titulo": "What would you like to book?",
+      "entrada": "Day visit",
+      "entradaDesc": "Park entrance, no overnight stay",
+      "camping": "Camping",
+      "campingDesc": "Camping area, no space limit",
+      "hospedaje": "Room or cabin",
+      "hospedajeDesc": "2 rooms and 1 cabin available, up to 4 people each"
+    },
+    "fechaLlegada": "Arrival date",
+    "fechaSalida": "Departure date",
+    "fecha": "Visit date",
+    "numPersonas": "Number of people",
+    "elegirUnidad": "Choose your room or cabin",
+    "proximamente": "Coming soon",
+    "maximoPersonas": "Maximum {{max}} people",
+    "excedeCapacidad": "This unit allows a maximum of {{max}} people. If your group is bigger, book this unit for the people who fit and make a separate Camping reservation for the rest.",
+    "avisoGrupoGrande": "Each room/cabin has a people limit. If your group is bigger, book the unit for those who fit and add a separate Camping reservation for the rest — camping has no people limit.",
+    "verificandoDisponibilidad": "Checking availability...",
+    "disponible": "Available",
+    "noDisponible": "Not available on those dates",
+    "resumen": "Summary",
+    "total": "Total",
+    "noches": "nights",
+    "avisoNoReembolsable": "This booking is non-refundable if you don't show up on the scheduled day.",
+    "continuar": "Continue",
+    "atras": "Back",
+    "nombreCompleto": "Full name",
+    "email": "Email address",
+    "telefono": "Phone number",
+    "notas": "Additional notes (optional)",
+    "enviarSolicitud": "Send request",
+    "enviando": "Sending...",
+    "combi": {
+      "descripcion": "If you'd like help arranging a shuttle van for your trip, check this box and we'll contact you to quote availability and cost.",
+      "checkbox": "Yes, I want information about shuttle transportation"
+    }
+  },
+  "confirmacion": {
+    "titulo": "Request received!",
+    "folio": "Confirmation #",
+    "detalles": "Your request details",
+    "volverInicio": "Back to home"
+  },
+  "errores": {
+    "generico": "Something went wrong. Please try again.",
+    "campoRequerido": "This field is required",
+    "emailInvalido": "Invalid email address"
+  },
+  "ctaConversion": {
+    "titulo": "Join those who've already lived EjiXhole",
+    "descripcion": "Read their real experiences above — now it's your turn to live it."
+  },
+  "resenas": {
+    "titulo": "What our visitors say",
+    "opiniones": "reviews on Google Maps",
+    "verTodas": "See all reviews"
+  },
+  "consejos": {
+    "titulo": "Tips for your visit",
+    "tituloPrep": "Get ready for your adventure",
+    "descripcionPrep": "Everything we recommend bringing, according to past visitors.",
+    "prep": {
+      "agua": "Water to stay hydrated",
+      "sol": "Sunscreen",
+      "calzado": "Non-slip footwear",
+      "camara": "Camera or phone",
+      "repelente": "Insect repellent"
+    },
+    "descripcion": "Real recommendations from people who've already visited.",
+    "items": [
+      "Visitors recommend visiting between November and April to see the river's most intense turquoise color.",
+      "The camping area is the most affordable lodging option at the park.",
+      "The park has limited capacity in high season — visitors suggest arriving early."
+    ]
+  },
+  "timeline": {
+    "titulo": "This is how you experience EjiXhole",
+    "descripcion": "Your visit, step by step.",
+    "pasos": {
+      "reserva": { "numero": "Step 1", "titulo": "Book", "descripcion": "Choose your date and type of visit online." },
+      "llegada": { "numero": "Step 2", "titulo": "Arrival", "descripcion": "Follow the road to El Naranjo, S.L.P." },
+      "checkin": { "numero": "Step 3", "titulo": "Check-in", "descripcion": "We welcome you and confirm your reservation." },
+      "actividades": { "numero": "Step 4", "titulo": "Activities", "descripcion": "Experience waterfalls, river, and adventure." },
+      "fotografias": { "numero": "Step 5", "titulo": "Photos", "descripcion": "Capture the moments you'll want to remember." },
+      "regreso": { "numero": "Step 6", "titulo": "Return", "descripcion": "Head home with renewed energy." }
+    }
+  },
+  "cierre": {
+    "frase": "Your adventure starts here.",
+    "subtexto": "The river, the waterfalls, and the Huasteca Potosina are waiting for you."
+  },
+  "faq": {
+    "titulo": "Frequently asked questions",
+    "descripcion": "What our visitors ask us most.",
+    "verMas": "See more questions",
+    "verMenos": "See less"
+  },
+  "footer": {
+    "descripcion": "Nature, adventure, and tranquility in the heart of the Huasteca Potosina.",
+    "siguenos": "Follow us and discover EjiXhole",
+    "ubicacion": "El Naranjo, San Luis Potosí, Mexico",
+    "derechos": "All rights reserved.",
+    "contacto": "Contact",
+    "horario": "Hours",
+    "horarioValor": "Monday to Sunday, 8:00 a.m. – 7:00 p.m."
+  },
+  "notFound": {
+    "titulo": "Page not found",
+    "boton": "Back to home"
+  }
+}
