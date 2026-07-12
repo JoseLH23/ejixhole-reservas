@@ -28,6 +28,16 @@ export function ReservarTipoFechasPage() {
   const { estado, actualizar } = useReserva();
   const [error, setError] = React.useState<string | null>(null);
 
+  // Buffer de texto separado del número real (estado.numPersonas) —
+  // ver el onChange/onBlur del input más abajo. Necesario para poder
+  // borrar el campo mientras se escribe un número nuevo (bug real
+  // reportado: antes, Number("") se volvía 0 y Math.max(1,0)=1
+  // reaparecía al instante, así que nunca se podía vaciar el campo).
+  const [personasTexto, setPersonasTexto] = React.useState(String(estado.numPersonas));
+  React.useEffect(() => {
+    setPersonasTexto(String(estado.numPersonas));
+  }, [estado.numPersonas]);
+
   const { data: unidades } = useQuery({
     queryKey: ["publico", "unidades-hospedaje"],
     queryFn: publicoApi.getUnidadesHospedaje,
@@ -252,8 +262,26 @@ export function ReservarTipoFechasPage() {
               <input
                 type="number"
                 min={1}
-                value={estado.numPersonas}
-                onChange={(e) => actualizar({ numPersonas: Math.max(1, Number(e.target.value)) })}
+                value={personasTexto}
+                onChange={(e) => {
+                  const crudo = e.target.value;
+                  setPersonasTexto(crudo);
+                  // Solo actualiza el estado real mientras el campo tiene un
+                  // número válido — si está vacío (el usuario borrando para
+                  // escribir uno nuevo), NO se fuerza a 1 todavía, o nunca
+                  // se podría borrar el "1" inicial (bug real reportado).
+                  if (crudo !== "" && !Number.isNaN(Number(crudo))) {
+                    actualizar({ numPersonas: Math.max(1, Number(crudo)) });
+                  }
+                }}
+                onBlur={() => {
+                  // Al salir del campo (o si quedó vacío/inválido), ahí sí
+                  // se aplica el mínimo de 1 — nunca antes, para no
+                  // interrumpir al usuario mientras todavía está escribiendo.
+                  const numero = Math.max(1, Number(personasTexto) || 1);
+                  setPersonasTexto(String(numero));
+                  actualizar({ numPersonas: numero });
+                }}
                 className={cn(
                   "w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2",
                   excedeCapacidad

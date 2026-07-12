@@ -1,6 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { IconoTikTok, IconoFacebook } from "@/components/shared/IconosRedesSociales";
+
+// Mismos datos reales que ya usaba el Footer — se reutilizan aquí, no
+// se duplica la fuente de verdad de las URLs.
+const REDES = [
+  { nombre: "TikTok", url: "https://www.tiktok.com/@ejixhole.parque.e", Icono: IconoTikTok },
+  { nombre: "Facebook", url: "https://www.facebook.com/share/1bmjun99j4/", Icono: IconoFacebook },
+];
+
 export function Header() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -21,6 +30,23 @@ export function Header() {
           <Link to="/" className="hidden text-sm font-medium text-foreground/70 hover:text-foreground sm:block">
             {t("nav.inicio")}
           </Link>
+
+          {/* Redes sociales — antes solo vivían hasta el fondo del Footer. */}
+          <div className="hidden items-center gap-2 sm:flex">
+            {REDES.map(({ nombre, url, Icono }) => (
+              <a
+                key={nombre}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={nombre}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground/70 transition-colors hover:border-primary hover:text-primary"
+              >
+                <Icono className="h-4 w-4" />
+              </a>
+            ))}
+          </div>
+
           <button
             onClick={() => navigate("/reservar")}
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98]"
