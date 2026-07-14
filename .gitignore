@@ -2,7 +2,6 @@ node_modules
 dist
 .env
 *.local
-
+# ME-16 (auditoría de seguridad 13/jul/2026): artefactos generados por
+# `tsc -b` — cambian en cada build local, no deben versionarse.
 *.tsbuildinfo
-vite.config.js
-vite.config.d.ts
