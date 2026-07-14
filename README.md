@@ -1,95 +1,156 @@
-# EjiXhole — Sitio público de reservaciones
+# EjiXhole — Portal público de reservaciones
 
-Proyecto nuevo y separado del sistema interno (Experience OS). Sin
-login — lo usa cualquier visitante para consultar el parque y
-reservar entrada, camping o hospedaje.
+Sitio público del ecosistema EjiXhole. Permite a visitantes conocer el
+parque, consultar información, revisar disponibilidad, cotizar y enviar
+solicitudes de reservación desde celular o computadora.
 
-## Cómo correrlo
+## Estado
 
-```bash
+Proyecto en **preproducción**. El flujo principal de reservación ya está
+conectado al backend real y actualmente se encuentra en etapa de pruebas
+integrales, optimización móvil y validación de contenido operativo.
+
+## Tecnologías
+
+- React 18
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- Axios
+- React i18next
+- Tailwind CSS
+- Open-Meteo
+
+## Funciones disponibles
+
+- Página pública del parque
+- Español e inglés
+- Galería
+- Actividades y servicios
+- Clima
+- Mapa y cómo llegar
+- Preguntas frecuentes
+- Redes sociales
+- Flujo guiado de reservación
+- Consulta de disponibilidad
+- Cotización calculada por el backend
+- Confirmación con folio real
+- Metadatos SEO y Open Graph
+
+## Flujo de reservación
+
+```text
+Inicio
+→ tipo de reservación
+→ fechas y número de personas
+→ disponibilidad y cotización
+→ datos del visitante
+→ envío al backend
+→ confirmación con folio
+```
+
+El total nunca se calcula en el navegador. El portal consulta al backend
+para evitar diferencias entre los precios publicados y los precios reales.
+
+## Arquitectura
+
+```text
+src/
+├── api/          backend público y servicios externos
+├── components/   secciones del sitio y elementos compartidos
+├── context/      estado del flujo de reservación
+├── i18n/         traducciones español/inglés
+├── pages/        páginas públicas y pasos del formulario
+├── router/       rutas de la aplicación
+└── types/        contratos TypeScript
+```
+
+## Instalación local
+
+```powershell
+git clone https://github.com/JoseLH23/ejixhole-reservas.git
+cd ejixhole-reservas
+
 npm install
-cp .env.example .env
-# Edita .env si tu backend no corre en localhost:8000
+Copy-Item .env.example .env
 npm run dev
 ```
 
-Corre en `http://localhost:5174` (puerto distinto al frontend interno,
-que usa 5173 — así puedes tener los 2 abiertos a la vez).
+La aplicación local se abre normalmente en:
 
-**Requisito:** el backend (`Ejixhole-Backend`) debe estar corriendo,
-con la migración `0004_usuario_id_opcional` aplicada y el catálogo
-cargado (`python -m scripts.seed_catalogo_publico`).
-
-## Qué construí
-
-- **Inicio** (`/`): presentación del parque, clima real (pronóstico
-  real ≤16 días, promedio histórico real más allá de eso), catálogo
-  de las 12 actividades informativas (real, desde el backend), aviso
-  de comida, mapa real de cómo llegar.
-- **Reservar, 3 pasos guiados** (`/reservar` → `/reservar/datos` →
-  `/reservar/confirmacion`): tipo + fechas + personas (con
-  disponibilidad real en vivo si es hospedaje, y precio real vía
-  `/publico/cotizar`) → datos de contacto → confirmación con los
-  datos reales de la respuesta del backend.
-- **Español/Inglés** completo, cambiable desde el encabezado.
-
-## Decisiones que quiero que sepas
-
-1. **El mapa busca por nombre del negocio** ("Parque Ecoturístico
-   EjiXhole, El Naranjo, San Luis Potosí"), no por una coordenada fija
-   — si ya tienen ficha en Google Maps (como vi en su Facebook),
-   debería apuntar directo ahí. Si prefieres una coordenada GPS exacta
-   del parque, dámela y la fijo en `src/components/inicio/MapaComoLlegar.tsx`.
-2. **El clima usa Open-Meteo** (gratis, sin necesidad de cuenta ni
-   contraseña) — no es parte del backend de EjiXhole, es una conexión
-   directa del sitio hacia un servicio externo real.
-3. **El total nunca se calcula en el frontend** — siempre se pide al
-   backend (`/publico/cotizar`), para que nunca se desincronice del
-   precio real si algún día cambian precios desde Servicios.
-4. **Verifiqué manualmente cada import y cada clave de traducción**
-   contra el código real (no pude instalar dependencias para correr
-   `tsc` de verdad — mismo bloqueo de red que en el proyecto interno).
-   Confirmé: 0 imports rotos, 0 claves de traducción faltantes, ES/EN
-   con las mismas claves entre sí.
-
-## Antes de publicar en producción
-
-- Configura `VITE_API_URL` en el `.env` de producción, apuntando al
-  dominio real del backend (no `localhost`).
-- El backend ya tiene `https://reservas.ejixhole.com` permitido en
-  CORS — si el dominio final es otro, avísame para actualizarlo.
-- Actualiza los precios de las 12 actividades informativas desde el
-  módulo Servicios (siguen en $0.00 con "PRECIO PENDIENTE" si no lo
-  has hecho).
-
-## Estructura
-
-```
-src/
-  api/          client.ts, publico.ts (llamadas reales al backend), clima.ts (Open-Meteo)
-  types/        publico.ts (refleja los schemas reales del backend)
-  i18n/         es.json, en.json, index.ts
-  context/      ReservaContext.tsx (estado del asistente de 3 pasos)
-  router/       AppRouter.tsx
-  pages/        InicioPage, ReservarTipoFechasPage, ReservarDatosPage, ConfirmacionPage, NotFoundPage
-  components/
-    layout/     Header, Footer, Layout
-    inicio/     Hero, ActividadesInformativas, AvisoComida, MapaComoLlegar, ClimaWidget
-    reservar/   WizardSteps
+```text
+http://localhost:5174
 ```
 
-## Cómo probarlo
+## Configuración
 
-1. `npm run dev`, abre `http://localhost:5174`.
-2. Confirma que el clima carga (revisa la consola del navegador si no — puede ser que Open-Meteo esté temporalmente lento).
-3. Confirma que las actividades informativas cargan (deben ser 12, sin precio visible en las que sigan en $0.00).
-4. Botón "Reservar" → elige "Camping" → llena fechas y personas → debe aparecer un total real calculado por el backend.
-5. Elige "Habitación o cabaña" → elige una unidad → cambia fechas → confirma que "Disponible"/"No disponible" responde de verdad (pruébalo reservando la misma unidad dos veces con fechas que se traslapen).
-6. Completa el formulario de contacto → envía → debes ver la confirmación con folio real.
-7. Verifica en tu sistema interno (módulo Reservaciones) que la solicitud aparece ahí, en estado "pendiente".
-8. Cambia el idioma a EN con el botón del encabezado y repite un par de pasos para confirmar que todo traduce.
+En `.env` configura la API:
 
-## Backend
+```env
+VITE_API_URL=http://127.0.0.1:8000
+```
 
-No se tocó nada nuevo del backend en este mensaje más allá de lo ya
-entregado (`cotizar`, CORS) — este proyecto es 100% frontend nuevo.
+En producción debe apuntar al dominio real del backend.
+
+## Requisitos del backend
+
+Antes de probar el flujo completo:
+
+```powershell
+alembic upgrade head
+python -m scripts.seed_catalogo_publico
+```
+
+El backend debe estar activo y permitir el origen del portal mediante CORS.
+
+## Compilación
+
+```powershell
+npm run build
+```
+
+## Prueba manual recomendada
+
+1. Abrir el sitio desde celular.
+2. Confirmar que carguen clima, actividades, galería y mapa.
+3. Elegir un tipo de reservación.
+4. Cambiar fechas y número de personas.
+5. Verificar disponibilidad y total.
+6. Completar los datos de contacto.
+7. Enviar la solicitud.
+8. Confirmar que aparezca el folio.
+9. Revisar que la reservación aparezca en el panel administrativo.
+10. Confirmar que llegue la notificación por correo cuando esté configurada.
+
+## Principios del portal
+
+- Experiencia clara y premium.
+- Información real, sin promociones ni indicadores inventados.
+- Precio y disponibilidad siempre consultados al backend.
+- Diseño móvil como prioridad.
+- Reservaciones seguras y simples.
+- Contenido bilingüe consistente.
+
+## Pendientes principales
+
+1. Añadir pruebas end-to-end del flujo de reservación.
+2. Optimizar fotografías y rendimiento móvil.
+3. Validar textos, precios, políticas y ubicación final.
+4. Añadir analítica de conversión respetuosa de privacidad.
+5. Mejorar protección contra spam.
+6. Verificar accesibilidad por teclado, contraste y lectores de pantalla.
+7. Ejecutar una reservación real controlada de principio a fin.
+8. Configurar integración continua con GitHub Actions.
+
+## Relación con el ecosistema
+
+- Consume endpoints públicos de `C-Ejixhole-Backend`.
+- Las solicitudes aparecen en `ejixhole-frontend`.
+- En una fase posterior, MindHigh podrá dirigir campañas al portal y
+  MH-Core analizará qué contenido genera visitas, reservaciones e ingresos.
+
+## Documentación maestra
+
+La visión, arquitectura y roadmap general se mantienen en el repositorio
+privado `MH-Ecosystem`.
