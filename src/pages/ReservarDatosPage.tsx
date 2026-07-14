@@ -24,7 +24,7 @@ type FormValues = z.infer<typeof schema>;
 export function ReservarDatosPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { estado, actualizar } = useReserva();
+  const { estado, reiniciar } = useReserva();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
   // AL-04: la MISMA key se reutiliza mientras dure este intento (un
@@ -82,13 +82,10 @@ export function ReservarDatosPage() {
         idempotencyKeyRef.current
       );
 
-      actualizar({
-        nombreCompleto: valores.nombreCompleto,
-        email: valores.email,
-        telefono: valores.telefono,
-        notas: valores.notas ?? "",
-        quiereCombi: valores.quiereCombi,
-      });
+      // Reservación confirmada por el backend: se limpia el wizard
+      // (memoria + sessionStorage) de una vez, ya no hay progreso que
+      // conservar.
+      reiniciar();
 
       idempotencyKeyRef.current = generarIdempotencyKey();
       navigate("/reservar/confirmacion", { state: { respuesta } });
