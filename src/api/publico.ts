@@ -40,8 +40,10 @@ export const publicoApi = {
     return data;
   },
 
-  crearReservacion: async (payload: ReservacionPublicaCreate): Promise<ReservacionPublicaResponse> => {
-    const { data } = await apiClient.post("/publico/reservaciones", payload);
+  crearReservacion: async (payload: ReservacionPublicaCreate, idempotencyKey?: string): Promise<ReservacionPublicaResponse> => {
+    const { data } = await apiClient.post("/publico/reservaciones", payload, {
+      headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : undefined,
+    });
     return data;
   },
 };

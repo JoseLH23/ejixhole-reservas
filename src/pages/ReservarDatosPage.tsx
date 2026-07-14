@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, User, Mail, Phone, MessageSquare } from "lucide-
 
 import { useReserva } from "@/context/ReservaContext";
 import { publicoApi } from "@/api/publico";
+import { generarIdempotencyKey } from "@/lib/idempotencyKey";
 import { WizardSteps } from "@/components/reservar/WizardSteps";
 
 const schema = z.object({
@@ -26,6 +27,12 @@ export function ReservarDatosPage() {
   const { estado, actualizar } = useReserva();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
+  // AL-04: la MISMA key se reutiliza mientras dure este intento (un
+  // doble clic antes de que responda el servidor comparte la misma
+  // clave — el backend lo dedupe de verdad). Se renueva tras terminar
+  // (éxito o error) para no bloquear un reintento legítimo con datos
+  // corregidos.
+  const idempotencyKeyRef = React.useRef(generarIdempotencyKey());
 
   const {
     register,
@@ -60,17 +67,20 @@ export function ReservarDatosPage() {
       : valores.notas || null;
 
     try {
-      const respuesta = await publicoApi.crearReservacion({
-        nombre_completo: valores.nombreCompleto,
-        email: valores.email,
-        telefono: valores.telefono,
-        tipo_reservacion: estado.tipoReservacion,
-        fecha_llegada: estado.fechaLlegada,
-        fecha_salida: estado.fechaSalida,
-        num_personas: estado.numPersonas,
-        unidad_hospedaje_id: estado.unidadHospedajeId,
-        notas: notasFinales,
-      });
+      const respuesta = await publicoApi.crearReservacion(
+        {
+          nombre_completo: valores.nombreCompleto,
+          email: valores.email,
+          telefono: valores.telefono,
+          tipo_reservacion: estado.tipoReservacion,
+          fecha_llegada: estado.fechaLlegada,
+          fecha_salida: estado.fechaSalida,
+          num_personas: estado.numPersonas,
+          unidad_hospedaje_id: estado.unidadHospedajeId,
+          notas: notasFinales,
+        },
+        idempotencyKeyRef.current
+      );
 
       actualizar({
         nombreCompleto: valores.nombreCompleto,
@@ -80,8 +90,10 @@ export function ReservarDatosPage() {
         quiereCombi: valores.quiereCombi,
       });
 
+      idempotencyKeyRef.current = generarIdempotencyKey();
       navigate("/reservar/confirmacion", { state: { respuesta } });
     } catch (err: any) {
+      idempotencyKeyRef.current = generarIdempotencyKey();
       setErrorEnvio(err?.response?.data?.detail ?? t("errores.generico"));
     } finally {
       setEnviando(false);
