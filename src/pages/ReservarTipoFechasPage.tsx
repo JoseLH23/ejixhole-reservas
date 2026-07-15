@@ -1,13 +1,15 @@
 import * as React from "react";
+import { addDays, addYears, format, parseISO } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Tent, Home, Sun, ArrowRight, Loader2, Calendar, Users, CheckCircle2, Info } from "lucide-react";
+import { Tent, Home, Sun, ArrowRight, Loader2, Users, CheckCircle2, Info } from "lucide-react";
 
 import { useReserva } from "@/context/ReservaContext";
 import { publicoApi } from "@/api/publico";
-import type { TipoReservacion } from "@/types/publico";
+import type { FechaBloqueadaPublica, TipoReservacion } from "@/types/publico";
 import { WizardSteps } from "@/components/reservar/WizardSteps";
+import { CalendarioFecha } from "@/components/reservar/CalendarioFecha";
 import { AvisoComida } from "@/components/inicio/AvisoComida";
 import { cn } from "@/lib/utils";
 
@@ -17,26 +19,77 @@ const OPCIONES_TIPO: { tipo: TipoReservacion; icon: typeof Tent; proximamente?: 
   { tipo: "hospedaje", icon: Home, proximamente: true },
 ];
 
+interface ReservarTipoFechasPageProps {
+  bloqueos?: FechaBloqueadaPublica[];
+}
+
 function extraerMensajeError(err: unknown, fallback: string): string {
   const detalle = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
   return typeof detalle === "string" ? detalle : fallback;
 }
 
-export function ReservarTipoFechasPage() {
-  const { t } = useTranslation();
+function fechaEnBloqueo(fecha: string, bloqueos: FechaBloqueadaPublica[]) {
+  return bloqueos.some(
+    (bloqueo) => bloqueo.fecha_inicio <= fecha && bloqueo.fecha_fin >= fecha
+  );
+}
+
+function rangoEnBloqueo(
+  fechaLlegada: string,
+  fechaSalida: string,
+  tipo: TipoReservacion,
+  bloqueos: FechaBloqueadaPublica[]
+) {
+  if (tipo === "entrada") return fechaEnBloqueo(fechaLlegada, bloqueos);
+
+  // Camping y hospedaje ocupan noches en [llegada, salida). El primer
+  // día bloqueado sí puede elegirse como check-out, pero no como noche.
+  return bloqueos.some(
+    (bloqueo) =>
+      bloqueo.fecha_inicio < fechaSalida && bloqueo.fecha_fin >= fechaLlegada
+  );
+}
+
+export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPageProps) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { estado, actualizar } = useReserva();
   const [error, setError] = React.useState<string | null>(null);
+  const hoy = format(new Date(), "yyyy-MM-dd");
+  const fechaLimite = format(addYears(new Date(), 1), "yyyy-MM-dd");
 
-  // Buffer de texto separado del número real (estado.numPersonas) —
-  // ver el onChange/onBlur del input más abajo. Necesario para poder
-  // borrar el campo mientras se escribe un número nuevo (bug real
-  // reportado: antes, Number("") se volvía 0 y Math.max(1,0)=1
-  // reaparecía al instante, así que nunca se podía vaciar el campo).
   const [personasTexto, setPersonasTexto] = React.useState(String(estado.numPersonas));
   React.useEffect(() => {
     setPersonasTexto(String(estado.numPersonas));
   }, [estado.numPersonas]);
+
+  React.useEffect(() => {
+    if (!estado.tipoReservacion || bloqueos.length === 0) return;
+
+    if (estado.fechaLlegada && fechaEnBloqueo(estado.fechaLlegada, bloqueos)) {
+      actualizar({ fechaLlegada: null, fechaSalida: null });
+      return;
+    }
+
+    if (
+      estado.fechaLlegada &&
+      estado.fechaSalida &&
+      rangoEnBloqueo(
+        estado.fechaLlegada,
+        estado.fechaSalida,
+        estado.tipoReservacion,
+        bloqueos
+      )
+    ) {
+      actualizar({ fechaSalida: null });
+    }
+  }, [
+    actualizar,
+    bloqueos,
+    estado.fechaLlegada,
+    estado.fechaSalida,
+    estado.tipoReservacion,
+  ]);
 
   const { data: unidades } = useQuery({
     queryKey: ["publico", "unidades-hospedaje"],
@@ -45,17 +98,27 @@ export function ReservarTipoFechasPage() {
   });
 
   const unidadSeleccionada = unidades?.find((u) => u.id === estado.unidadHospedajeId);
-
-  // Validación de capacidad EN EL FRONTEND, antes de siquiera llamar
-  // al backend — así el usuario ve el problema de inmediato, no un
-  // resumen vacío sin explicación (el bug que reportaste).
   const excedeCapacidad =
-    estado.tipoReservacion === "hospedaje" && !!unidadSeleccionada && estado.numPersonas > unidadSeleccionada.capacidad_maxima;
+    estado.tipoReservacion === "hospedaje" &&
+    !!unidadSeleccionada &&
+    estado.numPersonas > unidadSeleccionada.capacidad_maxima;
 
   const fechasCompletas =
     !!estado.fechaLlegada &&
     !!estado.fechaSalida &&
     (estado.tipoReservacion !== "hospedaje" || !!estado.unidadHospedajeId);
+
+  const rangoBloqueado = Boolean(
+    estado.tipoReservacion &&
+      estado.fechaLlegada &&
+      estado.fechaSalida &&
+      rangoEnBloqueo(
+        estado.fechaLlegada,
+        estado.fechaSalida,
+        estado.tipoReservacion,
+        bloqueos
+      )
+  );
 
   const { data: disponibilidad, isFetching: verificandoDisponibilidad } = useQuery({
     queryKey: ["publico", "disponibilidad", estado.unidadHospedajeId, estado.fechaLlegada, estado.fechaSalida],
@@ -65,13 +128,19 @@ export function ReservarTipoFechasPage() {
         fecha_llegada: estado.fechaLlegada!,
         fecha_salida: estado.fechaSalida!,
       }),
-    enabled: estado.tipoReservacion === "hospedaje" && !!estado.unidadHospedajeId && !!estado.fechaLlegada && !!estado.fechaSalida,
+    enabled:
+      estado.tipoReservacion === "hospedaje" &&
+      !!estado.unidadHospedajeId &&
+      !!estado.fechaLlegada &&
+      !!estado.fechaSalida &&
+      !rangoBloqueado,
   });
 
   const puedeCotizar =
     fechasCompletas &&
     estado.numPersonas > 0 &&
     !excedeCapacidad &&
+    !rangoBloqueado &&
     (estado.tipoReservacion !== "hospedaje" || disponibilidad?.disponible !== false);
 
   const {
@@ -103,19 +172,40 @@ export function ReservarTipoFechasPage() {
 
   const seleccionarTipo = (tipo: TipoReservacion) => {
     setError(null);
-    actualizar({ tipoReservacion: tipo, unidadHospedajeId: null, fechaLlegada: null, fechaSalida: null });
+    actualizar({
+      tipoReservacion: tipo,
+      unidadHospedajeId: null,
+      fechaLlegada: null,
+      fechaSalida: null,
+    });
   };
 
   const handleFechaLlegada = (valor: string) => {
+    if (estado.tipoReservacion === "entrada") {
+      actualizar({ fechaLlegada: valor, fechaSalida: valor });
+      return;
+    }
+
+    const salidaActual = estado.fechaSalida;
+    const salidaSigueValida =
+      salidaActual &&
+      salidaActual > valor &&
+      estado.tipoReservacion &&
+      !rangoEnBloqueo(valor, salidaActual, estado.tipoReservacion, bloqueos);
+
     actualizar({
       fechaLlegada: valor,
-      fechaSalida: estado.tipoReservacion === "entrada" ? valor : estado.fechaSalida,
+      fechaSalida: salidaSigueValida ? salidaActual : null,
     });
   };
 
   const continuar = () => {
     if (!estado.tipoReservacion || !estado.fechaLlegada || !estado.fechaSalida) {
       setError(t("errores.campoRequerido"));
+      return;
+    }
+    if (rangoBloqueado) {
+      setError(t("reservar.noDisponible"));
       return;
     }
     if (estado.tipoReservacion === "hospedaje" && !estado.unidadHospedajeId) {
@@ -132,6 +222,10 @@ export function ReservarTipoFechasPage() {
     }
     navigate("/reservar/datos");
   };
+
+  const fechaSalidaMinima = estado.fechaLlegada
+    ? format(addDays(parseISO(`${estado.fechaLlegada}T00:00:00`), 1), "yyyy-MM-dd")
+    : hoy;
 
   return (
     <div>
@@ -150,6 +244,7 @@ export function ReservarTipoFechasPage() {
             return (
               <button
                 key={tipo}
+                type="button"
                 onClick={() => !proximamente && seleccionarTipo(tipo)}
                 disabled={proximamente}
                 className={cn(
@@ -184,9 +279,6 @@ export function ReservarTipoFechasPage() {
           })}
         </div>
 
-        {/* Grupos grandes: no existe una sola reservación que combine
-            hospedaje + camping — se le explica la solución real (2
-            solicitudes) en vez de dejarlo adivinar por qué falla. */}
         {estado.tipoReservacion === "hospedaje" && (
           <div className="mt-4 flex items-start gap-2 rounded-lg border border-secondary/30 bg-secondary/5 p-3 text-xs text-muted-foreground">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
@@ -205,6 +297,7 @@ export function ReservarTipoFechasPage() {
                     return (
                       <button
                         key={unidad.id}
+                        type="button"
                         onClick={() => actualizar({ unidadHospedajeId: unidad.id })}
                         className={cn(
                           "relative rounded-lg border p-3 text-left text-sm transition-all",
@@ -224,33 +317,37 @@ export function ReservarTipoFechasPage() {
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                  {estado.tipoReservacion === "entrada" ? t("reservar.fecha") : t("reservar.fechaLlegada")}
-                </label>
-                <input
-                  type="date"
-                  value={estado.fechaLlegada ?? ""}
-                  onChange={(e) => handleFechaLlegada(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
+              <CalendarioFecha
+                label={estado.tipoReservacion === "entrada" ? t("reservar.fecha") : t("reservar.fechaLlegada")}
+                value={estado.fechaLlegada}
+                min={hoy}
+                max={fechaLimite}
+                language={i18n.language}
+                blockedMessage={t("reservar.noDisponible")}
+                onChange={handleFechaLlegada}
+                isBlocked={(fecha) => fechaEnBloqueo(fecha, bloqueos)}
+              />
+
               {estado.tipoReservacion !== "entrada" && (
-                <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-                    <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                    {t("reservar.fechaSalida")}
-                  </label>
-                  <input
-                    type="date"
-                    value={estado.fechaSalida ?? ""}
-                    onChange={(e) => actualizar({ fechaSalida: e.target.value })}
-                    min={estado.fechaLlegada ?? new Date().toISOString().split("T")[0]}
-                    className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
+                <CalendarioFecha
+                  label={t("reservar.fechaSalida")}
+                  value={estado.fechaSalida}
+                  min={fechaSalidaMinima}
+                  max={fechaLimite}
+                  language={i18n.language}
+                  blockedMessage={t("reservar.noDisponible")}
+                  onChange={(fechaSalida) => actualizar({ fechaSalida })}
+                  isBlocked={(fechaSalida) =>
+                    estado.fechaLlegada
+                      ? rangoEnBloqueo(
+                          estado.fechaLlegada,
+                          fechaSalida,
+                          estado.tipoReservacion!,
+                          bloqueos
+                        )
+                      : false
+                  }
+                />
               )}
             </div>
 
@@ -266,18 +363,11 @@ export function ReservarTipoFechasPage() {
                 onChange={(e) => {
                   const crudo = e.target.value;
                   setPersonasTexto(crudo);
-                  // Solo actualiza el estado real mientras el campo tiene un
-                  // número válido — si está vacío (el usuario borrando para
-                  // escribir uno nuevo), NO se fuerza a 1 todavía, o nunca
-                  // se podría borrar el "1" inicial (bug real reportado).
                   if (crudo !== "" && !Number.isNaN(Number(crudo))) {
                     actualizar({ numPersonas: Math.max(1, Number(crudo)) });
                   }
                 }}
                 onBlur={() => {
-                  // Al salir del campo (o si quedó vacío/inválido), ahí sí
-                  // se aplica el mínimo de 1 — nunca antes, para no
-                  // interrumpir al usuario mientras todavía está escribiendo.
                   const numero = Math.max(1, Number(personasTexto) || 1);
                   setPersonasTexto(String(numero));
                   actualizar({ numPersonas: numero });
@@ -314,6 +404,10 @@ export function ReservarTipoFechasPage() {
               </p>
             )}
 
+            {rangoBloqueado && (
+              <p className="text-sm font-medium text-destructive">{t("reservar.noDisponible")}</p>
+            )}
+
             {excedeCapacidad && (
               <p className="text-sm font-medium text-destructive">
                 {t("reservar.excedeCapacidad", { max: unidadSeleccionada?.capacidad_maxima })}
@@ -333,7 +427,6 @@ export function ReservarTipoFechasPage() {
                   </p>
                 ) : cotizacion ? (
                   <>
-                    {/* Desglose real por concepto — para que siempre sepan qué se les cobra, no solo el total. */}
                     <ul className="mt-2 space-y-1.5 border-b border-primary/10 pb-3">
                       {cotizacion.desglose.map((linea) => (
                         <li key={linea.concepto} className="flex items-baseline justify-between gap-3 text-sm">
@@ -362,6 +455,7 @@ export function ReservarTipoFechasPage() {
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <button
+              type="button"
               onClick={continuar}
               disabled={!puedeCotizar || !cotizacion}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 font-medium text-primary-foreground shadow-md transition-all hover:enabled:scale-[1.01] hover:enabled:shadow-lg disabled:opacity-40"
