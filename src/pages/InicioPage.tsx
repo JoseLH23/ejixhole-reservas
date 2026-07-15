@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Hero } from "@/components/inicio/Hero";
+import { ConversionSupport } from "@/components/inicio/ConversionSupport";
 import { QueIncluye } from "@/components/inicio/QueIncluye";
 import { ActividadesInformativas } from "@/components/inicio/ActividadesInformativas";
 import { FaunaSection } from "@/components/inicio/FaunaSection";
@@ -27,8 +28,9 @@ function SeccionAnimada({ children }: { children: ReactNode }) {
 
 export function InicioPage() {
   return (
-    <div>
+    <div className="pb-20 md:pb-0">
       <Hero />
+      <ConversionSupport />
       <SeccionAnimada>
         <QueIncluye />
       </SeccionAnimada>
