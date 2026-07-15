@@ -69,7 +69,7 @@ export function ReservarInicioPage() {
           </div>
         </section>
       )}
-      <ReservarTipoFechasPage />
+      <ReservarTipoFechasPage bloqueos={bloqueos ?? []} />
     </>
   );
 }
