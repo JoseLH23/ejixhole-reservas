@@ -27,11 +27,12 @@ export function ReservarDatosPage() {
   const { estado, actualizar, reiniciar } = useReserva();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
-  // AL-04: la MISMA key se reutiliza mientras dure este intento (un
-  // doble clic antes de que responda el servidor comparte la misma
-  // clave — el backend lo dedupe de verdad). Se renueva tras terminar
-  // (éxito o error) para no bloquear un reintento legítimo con datos
-  // corregidos.
+  // AL-04: la MISMA key se conserva hasta que el backend confirme éxito.
+  // Si hay timeout, pérdida de red o respuesta 5xx, no sabemos si la
+  // reservación alcanzó a guardarse. Reintentar con la misma key permite
+  // que el backend devuelva la operación original en vez de duplicarla.
+  // El backend libera la key cuando la operación falla realmente, así que
+  // también es seguro reutilizarla después de un error de negocio.
   const idempotencyKeyRef = React.useRef(generarIdempotencyKey());
 
   const {
@@ -100,7 +101,9 @@ export function ReservarDatosPage() {
       idempotencyKeyRef.current = generarIdempotencyKey();
       navigate("/reservar/confirmacion", { state: { respuesta } });
     } catch (err: any) {
-      idempotencyKeyRef.current = generarIdempotencyKey();
+      // No se renueva la key: el resultado puede ser incierto. Un retry
+      // debe usar la misma identidad para que el backend pueda deduplicar
+      // o devolver la respuesta ya guardada.
       setErrorEnvio(err?.response?.data?.detail ?? t("errores.generico"));
     } finally {
       setEnviando(false);
