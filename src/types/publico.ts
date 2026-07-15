@@ -22,6 +22,11 @@ export interface DisponibilidadResponse {
   disponible: boolean;
 }
 
+export interface FechaBloqueadaPublica {
+  fecha_inicio: string;
+  fecha_fin: string;
+}
+
 export interface ConceptoPrecio {
   concepto: string;
   detalle: string;
