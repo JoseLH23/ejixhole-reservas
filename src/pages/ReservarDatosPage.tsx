@@ -24,7 +24,7 @@ type FormValues = z.infer<typeof schema>;
 export function ReservarDatosPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { estado, actualizar } = useReserva();
+  const { estado, actualizar, reiniciar } = useReserva();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
   // AL-04: la MISMA key se reutiliza mientras dure este intento (un
@@ -37,6 +37,7 @@ export function ReservarDatosPage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -48,6 +49,15 @@ export function ReservarDatosPage() {
       quiereCombi: estado.quiereCombi,
     },
   });
+
+  // ME-10: quiereCombi sí se persiste en sessionStorage (no es PII),
+  // así que hay que reflejar el checkbox en ReservaContext apenas
+  // cambia — si no, la reserva persistida queda con el valor viejo
+  // aunque el visitante haya marcado la casilla.
+  const quiereCombi = watch("quiereCombi");
+  React.useEffect(() => {
+    actualizar({ quiereCombi });
+  }, [quiereCombi, actualizar]);
 
   // Si alguien llega aquí directo (sin pasar por el paso 1), lo regresamos.
   React.useEffect(() => {
@@ -82,13 +92,10 @@ export function ReservarDatosPage() {
         idempotencyKeyRef.current
       );
 
-      actualizar({
-        nombreCompleto: valores.nombreCompleto,
-        email: valores.email,
-        telefono: valores.telefono,
-        notas: valores.notas ?? "",
-        quiereCombi: valores.quiereCombi,
-      });
+      // Reservación confirmada por el backend: se limpia el wizard
+      // (memoria + sessionStorage) de una vez, ya no hay progreso que
+      // conservar.
+      reiniciar();
 
       idempotencyKeyRef.current = generarIdempotencyKey();
       navigate("/reservar/confirmacion", { state: { respuesta } });
