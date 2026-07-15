@@ -38,8 +38,11 @@ export function InicioPage() {
         <ActividadesInformativas />
       </SeccionAnimada>
       <SeccionAnimada>
-        <FaunaSection />
+        <ResenasSection />
       </SeccionAnimada>
+      <div className="py-6">
+        <CTAConversion />
+      </div>
       <SeccionAnimada>
         <Galeria />
       </SeccionAnimada>
@@ -47,19 +50,16 @@ export function InicioPage() {
         <ConsejosVisita />
       </SeccionAnimada>
       <SeccionAnimada>
-        <ResenasSection />
+        <FaunaSection />
       </SeccionAnimada>
-      <div className="py-6">
-        <CTAConversion />
-      </div>
       <SeccionAnimada>
         <MapaComoLlegar />
       </SeccionAnimada>
       <SeccionAnimada>
-        <DescubreElNaranjo />
+        <TimelineExperiencia />
       </SeccionAnimada>
       <SeccionAnimada>
-        <TimelineExperiencia />
+        <DescubreElNaranjo />
       </SeccionAnimada>
       <SeccionAnimada>
         <HistoriaMision />

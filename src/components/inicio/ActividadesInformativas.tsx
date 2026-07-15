@@ -18,19 +18,6 @@ import {
 
 import { publicoApi } from "@/api/publico";
 
-/**
- * Ícono propio por actividad (ninguno se repite) — se resuelve por
- * palabra clave del nombre REAL que da el backend, igual patrón ya
- * usado en ProximasReservacionesCards.tsx. Si algún día se agrega una
- * actividad nueva que no calza con ninguna palabra clave, cae a un
- * ícono genérico — nunca rompe.
- */
-/**
- * Duración/dificultad/edad recomendada — dato real que dio el
- * cliente. Se empareja por palabra clave, igual patrón que el ícono;
- * si una actividad no calza con ninguna, simplemente no muestra esta
- * fila extra (no se inventa nada para las que faltan).
- */
 function metadataDeActividad(
   nombre: string
 ): { duracion: string; dificultad: string; edad: string } | { nota: string } | null {
@@ -65,18 +52,27 @@ function iconoPorActividad(nombre: string): LucideIcon {
   return Waves;
 }
 
-/**
- * Agrupación honesta por tipo de actividad (agua / tierra / servicios)
- * — es una clasificación objetiva, no un ranking de popularidad
- * inventado. Ayuda a escanear la lista sin fabricar datos que no
- * tengo (cuáles son "las más populares" realmente).
- */
 function categoriaDeActividad(nombre: string): "agua" | "tierra" | "servicios" {
   const texto = nombre.toLowerCase();
   if (texto.includes("guía") || texto.includes("guia") || texto.includes("evento")) return "servicios";
   if (texto.includes("caballo") || texto.includes("senderismo")) return "tierra";
   return "agua";
 }
+
+const ESTILOS_CATEGORIA = {
+  agua: {
+    contenedor: "border-cyan-200/70 bg-gradient-to-br from-cyan-50 via-card to-blue-50/70",
+    icono: "bg-cyan-100 text-cyan-700",
+  },
+  tierra: {
+    contenedor: "border-amber-200/70 bg-gradient-to-br from-amber-50 via-card to-orange-50/70",
+    icono: "bg-amber-100 text-amber-700",
+  },
+  servicios: {
+    contenedor: "border-emerald-200/70 bg-gradient-to-br from-emerald-50 via-card to-green-50/70",
+    icono: "bg-emerald-100 text-emerald-700",
+  },
+} as const;
 
 export function ActividadesInformativas() {
   const { t } = useTranslation();
@@ -86,53 +82,67 @@ export function ActividadesInformativas() {
   });
 
   return (
-    <section id="actividades" className="bg-muted py-10">
+    <section id="actividades" className="bg-muted py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">{t("actividades.titulo")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("actividades.nota")}</p>
+        <div className="max-w-2xl">
+          <h2 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">{t("actividades.titulo")}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">{t("actividades.nota")}</p>
+        </div>
 
         {isLoading && (
-          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="min-h-32 animate-pulse rounded-xl bg-card" />
+          <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="min-h-44 animate-pulse rounded-2xl bg-card" />
             ))}
           </div>
         )}
 
         {!isLoading && data && (
-          <div className="mt-5 space-y-6">
+          <div className="mt-8 space-y-10">
             {(["agua", "tierra", "servicios"] as const).map((categoria) => {
               const items = data.filter((s) => categoriaDeActividad(s.nombre) === categoria);
               if (items.length === 0) return null;
+              const estilo = ESTILOS_CATEGORIA[categoria];
+
               return (
                 <div key={categoria}>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-secondary">
-                    {t(`actividades.categorias.${categoria}`)}
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className={`h-2.5 w-2.5 rounded-full ${estilo.icono}`} />
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">
+                      {t(`actividades.categorias.${categoria}`)}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {items.map((servicio) => {
                       const Icon = iconoPorActividad(servicio.nombre);
                       const meta = metadataDeActividad(servicio.nombre);
+
                       return (
-                        <div
+                        <article
                           key={servicio.nombre}
-                          className="flex min-h-32 flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                          className={`group relative overflow-hidden rounded-2xl border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${estilo.contenedor}`}
                         >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary/15 text-secondary">
-                            <Icon className="h-5 w-5" />
+                          <div className="flex items-start gap-4">
+                            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${estilo.icono}`}>
+                              <Icon className="h-6 w-6" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-base font-semibold leading-snug text-foreground">{servicio.nombre}</h3>
+                              {Number(servicio.precio) > 0 && (
+                                <p className="mt-1 text-sm font-medium text-secondary">
+                                  ${Number(servicio.precio).toFixed(0)} {t("actividades.porPersona")}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-sm font-medium leading-tight text-foreground">{servicio.nombre}</p>
-                          {Number(servicio.precio) > 0 && (
-                            <p className="text-[11px] text-muted-foreground">
-                              ${Number(servicio.precio).toFixed(0)} {t("actividades.porPersona")}
-                            </p>
-                          )}
+
                           {meta && (
-                            <p className="text-[10px] text-muted-foreground">
+                            <div className="mt-4 border-t border-foreground/10 pt-3 text-xs leading-relaxed text-muted-foreground">
                               {"nota" in meta ? meta.nota : `${meta.duracion} · ${meta.dificultad} · ${meta.edad}`}
-                            </p>
+                            </div>
                           )}
-                        </div>
+                        </article>
                       );
                     })}
                   </div>
