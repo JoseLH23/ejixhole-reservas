@@ -54,12 +54,12 @@ function leerEstadoPersistido(): EstadoPersistible | null {
     if (!crudo) return null;
     const datos = JSON.parse(crudo) as Partial<EstadoAlmacenado>;
     if (datos.version !== STORAGE_VERSION || !datos.expiraEn || !datos.estado || Date.now() > datos.expiraEn) {
-      sessionStorage.removeItem(STORAGE_KEY);
+      limpiarEstadoPersistido();
       return null;
     }
     return datos.estado;
   } catch {
-    sessionStorage.removeItem(STORAGE_KEY);
+    limpiarEstadoPersistido();
     return null;
   }
 }
