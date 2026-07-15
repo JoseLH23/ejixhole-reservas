@@ -2,6 +2,7 @@ import { apiClient } from "./client";
 import type {
   CotizacionResponse,
   DisponibilidadResponse,
+  FechaBloqueadaPublica,
   ReservacionPublicaCreate,
   ReservacionPublicaResponse,
   ServicioPublico,
@@ -17,6 +18,14 @@ export const publicoApi = {
 
   getUnidadesHospedaje: async (): Promise<UnidadHospedajePublico[]> => {
     const { data } = await apiClient.get("/publico/unidades-hospedaje");
+    return data;
+  },
+
+  getFechasBloqueadas: async (params: {
+    desde: string;
+    hasta: string;
+  }): Promise<FechaBloqueadaPublica[]> => {
+    const { data } = await apiClient.get("/publico/fechas-bloqueadas", { params });
     return data;
   },
 
