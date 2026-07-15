@@ -1,0 +1,200 @@
+import * as React from "react";
+import {
+  addDays,
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  parseISO,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
+} from "date-fns";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+interface CalendarioFechaProps {
+  label: string;
+  value: string | null;
+  min: string;
+  max: string;
+  language: string;
+  blockedMessage: string;
+  onChange: (value: string) => void;
+  isBlocked: (value: string) => boolean;
+}
+
+function fechaLocalIso(fecha: Date) {
+  return format(fecha, "yyyy-MM-dd");
+}
+
+function fechaSegura(value: string) {
+  return parseISO(`${value}T00:00:00`);
+}
+
+export function CalendarioFecha({
+  label,
+  value,
+  min,
+  max,
+  language,
+  blockedMessage,
+  onChange,
+  isBlocked,
+}: CalendarioFechaProps) {
+  const contenedorRef = React.useRef<HTMLDivElement>(null);
+  const [abierto, setAbierto] = React.useState(false);
+  const [mesVisible, setMesVisible] = React.useState(() =>
+    startOfMonth(fechaSegura(value ?? min))
+  );
+
+  React.useEffect(() => {
+    if (value) setMesVisible(startOfMonth(fechaSegura(value)));
+  }, [value]);
+
+  React.useEffect(() => {
+    if (!abierto) return;
+
+    const cerrar = (event: MouseEvent) => {
+      if (!contenedorRef.current?.contains(event.target as Node)) setAbierto(false);
+    };
+
+    document.addEventListener("mousedown", cerrar);
+    return () => document.removeEventListener("mousedown", cerrar);
+  }, [abierto]);
+
+  const primerMes = startOfMonth(fechaSegura(min));
+  const ultimoMes = startOfMonth(fechaSegura(max));
+  const dias = eachDayOfInterval({
+    start: startOfWeek(startOfMonth(mesVisible), { weekStartsOn: 1 }),
+    end: endOfWeek(endOfMonth(mesVisible), { weekStartsOn: 1 }),
+  });
+  const diasSemana = Array.from({ length: 7 }, (_, index) =>
+    new Intl.DateTimeFormat(language, { weekday: "narrow" }).format(
+      addDays(new Date(2024, 0, 1), index)
+    )
+  );
+
+  const formatoFecha = new Intl.DateTimeFormat(language, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const formatoMes = new Intl.DateTimeFormat(language, {
+    month: "long",
+    year: "numeric",
+  });
+
+  function seleccionar(fecha: Date) {
+    onChange(fechaLocalIso(fecha));
+    setAbierto(false);
+  }
+
+  return (
+    <div ref={contenedorRef} className="relative">
+      <label className="mb-1.5 block text-sm font-medium text-foreground">{label}</label>
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={abierto}
+        onClick={() => setAbierto((actual) => !actual)}
+        className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2.5 text-left text-sm transition-colors hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className={cn("truncate", !value && "text-muted-foreground")}>
+            {value ? formatoFecha.format(fechaSegura(value)) : label}
+          </span>
+        </span>
+        <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", abierto && "rotate-180")} />
+      </button>
+
+      {abierto && (
+        <div
+          role="dialog"
+          aria-label={label}
+          className="absolute left-0 z-30 mt-2 w-full min-w-[290px] rounded-xl border border-border bg-card p-3 shadow-xl"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <button
+              type="button"
+              disabled={mesVisible.getTime() <= primerMes.getTime()}
+              onClick={() => setMesVisible((actual) => subMonths(actual, 1))}
+              aria-label={formatoMes.format(subMonths(mesVisible, 1))}
+              className="rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <p className="capitalize text-sm font-semibold text-foreground">
+              {formatoMes.format(mesVisible)}
+            </p>
+            <button
+              type="button"
+              disabled={mesVisible.getTime() >= ultimoMes.getTime()}
+              onClick={() => setMesVisible((actual) => addMonths(actual, 1))}
+              aria-label={formatoMes.format(addMonths(mesVisible, 1))}
+              className="rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-3 grid grid-cols-7 gap-1">
+            {diasSemana.map((dia, index) => (
+              <span
+                key={`${dia}-${index}`}
+                className="py-1 text-center text-[10px] font-semibold uppercase text-muted-foreground"
+              >
+                {dia}
+              </span>
+            ))}
+
+            {dias.map((dia) => {
+              const iso = fechaLocalIso(dia);
+              const fueraDeRango = iso < min || iso > max;
+              const bloqueado = !fueraDeRango && isBlocked(iso);
+              const deshabilitado = fueraDeRango || bloqueado;
+              const seleccionado = value ? isSameDay(dia, fechaSegura(value)) : false;
+              const fueraDeMes = !isSameMonth(dia, mesVisible);
+
+              return (
+                <button
+                  key={iso}
+                  type="button"
+                  disabled={deshabilitado}
+                  title={bloqueado ? blockedMessage : formatoFecha.format(dia)}
+                  aria-label={
+                    bloqueado
+                      ? `${formatoFecha.format(dia)}. ${blockedMessage}`
+                      : formatoFecha.format(dia)
+                  }
+                  onClick={() => seleccionar(dia)}
+                  className={cn(
+                    "relative aspect-square rounded-lg text-xs font-medium transition-colors",
+                    fueraDeMes && "text-muted-foreground/45",
+                    !deshabilitado && "hover:bg-primary/10 hover:text-primary",
+                    seleccionado && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+                    fueraDeRango && "cursor-not-allowed text-muted-foreground/25",
+                    bloqueado &&
+                      "cursor-not-allowed border border-destructive/20 bg-destructive/10 text-destructive/70 line-through"
+                  )}
+                >
+                  {format(dia, "d")}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 flex items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
+            <span className="h-3 w-3 rounded border border-destructive/20 bg-destructive/10" />
+            {blockedMessage}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
