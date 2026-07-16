@@ -6,7 +6,7 @@
     "resumenSolicitud": "Tu selección",
     "editarSeleccion": "Editar",
     "fechasSeleccionadas": "Fechas",
-    "datosProtegidos": "Tus datos de contacto no se guardan en el navegador. Solo se envían cuando confirmas la solicitud.",
+    "datosProtegidos": "Tus datos de contacto no se guardan en el almacenamiento del navegador. Solo se envían cuando confirmas la solicitud.",
     "errorConsultaCierresTitulo": "No pudimos consultar los cierres programados",
     "errorConsultaCierresDescripcion": "Puedes continuar eligiendo tu visita. La disponibilidad y el precio se volverán a validar antes de enviar la solicitud.",
     "reintentar": "Volver a intentar",
