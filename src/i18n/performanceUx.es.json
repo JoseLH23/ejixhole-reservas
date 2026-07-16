@@ -1,0 +1,6 @@
+{
+  "galeria": {
+    "mostrarMas": "Ver {{cantidad}} fotos más",
+    "mostrarMenos": "Mostrar menos fotos"
+  }
+}

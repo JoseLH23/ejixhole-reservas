@@ -7,7 +7,8 @@
     "dev": "vite",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "build": "tsc -b && vite build",
-    "check": "npm run test && npm run build",
+    "performance:check": "node scripts/check-performance-budget.mjs",
+    "check": "npm run test && npm run build && npm run performance:check",
     "preview": "vite preview"
   },
   "dependencies": {

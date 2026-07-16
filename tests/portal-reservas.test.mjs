@@ -116,6 +116,43 @@ test("el wizard muestra progreso y permite recuperarse de errores", async () => 
   assert.match(i18n, /reservaUxEn/);
 });
 
+test("el portal limita imágenes iniciales y mide rendimiento real", async () => {
+  const [hero, galeria, lightbox, inicio, metricas, html, vercel, workflow, paquete] = await Promise.all([
+    leer("src/components/inicio/Hero.tsx"),
+    leer("src/components/inicio/Galeria.tsx"),
+    leer("src/components/shared/Lightbox.tsx"),
+    leer("src/pages/InicioPage.tsx"),
+    leer("src/lib/webVitals.ts"),
+    leer("index.html"),
+    leer("vercel.json"),
+    leer(".github/workflows/reservas-ci.yml"),
+    leer("package.json"),
+  ]);
+
+  assert.doesNotMatch(hero, /\/gallery\/rio-2\.jpg/);
+  assert.match(hero, /fetchPriority="high"/);
+  assert.match(html, /rel="preload" href="\/gallery\/hero-principal\.jpg"/);
+
+  assert.match(galeria, /const LIMITE_INICIAL = 8/);
+  assert.match(galeria, /loading="lazy"/);
+  assert.match(galeria, /fetchPriority="low"/);
+  assert.match(galeria, /galeria\.mostrarMas/);
+  assert.match(lightbox, /const imagen = new Image\(\)/);
+
+  assert.match(inicio, /IntersectionObserver/);
+  assert.match(inicio, /rootMargin: "600px 0px"/);
+  assert.match(inicio, /lazy\(\(\) => import/);
+
+  assert.match(metricas, /largest-contentful-paint/);
+  assert.match(metricas, /layout-shift/);
+  assert.match(metricas, /"event"/);
+  assert.match(metricas, /ejixhole:web-vital/);
+
+  assert.match(vercel, /stale-while-revalidate=604800/);
+  assert.match(workflow, /npm run performance:check/);
+  assert.match(paquete, /"performance:check"/);
+});
+
 test("sessionStorage guarda progreso, nunca datos personales", async () => {
   const contexto = await leer("src/context/ReservaContext.tsx");
   const inicioPick = contexto.indexOf("type EstadoPersistible");

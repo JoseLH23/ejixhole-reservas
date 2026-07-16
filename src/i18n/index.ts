@@ -6,17 +6,21 @@ import es from "./es.json";
 import en from "./en.json";
 import reservaUxEs from "./reservaUx.es.json";
 import reservaUxEn from "./reservaUx.en.json";
+import performanceUxEs from "./performanceUx.es.json";
+import performanceUxEn from "./performanceUx.en.json";
 
 const traduccionEs = {
   ...es,
   reservar: { ...es.reservar, ...reservaUxEs.reservar },
   confirmacion: { ...es.confirmacion, ...reservaUxEs.confirmacion },
+  galeria: { ...es.galeria, ...performanceUxEs.galeria },
 };
 
 const traduccionEn = {
   ...en,
   reservar: { ...en.reservar, ...reservaUxEn.reservar },
   confirmacion: { ...en.confirmacion, ...reservaUxEn.confirmacion },
+  galeria: { ...en.galeria, ...performanceUxEn.galeria },
 };
 
 i18n
