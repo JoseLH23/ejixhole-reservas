@@ -82,7 +82,8 @@ export function iniciarWebVitals() {
       if (fcp) publicar("FCP", fcp.startTime);
     }),
     observar("largest-contentful-paint", (lista) => {
-      const ultima = lista.getEntries().at(-1) as LargestContentfulPaintEntry | undefined;
+      const entradas = lista.getEntries() as LargestContentfulPaintEntry[];
+      const ultima = entradas[entradas.length - 1];
       if (ultima) lcp = ultima.renderTime || ultima.loadTime || ultima.startTime;
     }),
     observar("layout-shift", (lista) => {
@@ -108,8 +109,12 @@ export function iniciarWebVitals() {
     observadores.forEach((observador) => observador.disconnect());
   };
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") cerrarMedicion();
-  }, { once: true });
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (document.visibilityState === "hidden") cerrarMedicion();
+    },
+    { once: true }
+  );
   window.addEventListener("pagehide", cerrarMedicion, { once: true });
 }
