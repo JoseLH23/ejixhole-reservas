@@ -87,6 +87,35 @@ test("el portal conserva cotización, disponibilidad y creación pública", asyn
   assert.match(paginaDatos, /idempotenciaRef\.current\.confirmarExito\(\)/);
 });
 
+test("el wizard muestra progreso y permite recuperarse de errores", async () => {
+  const [pasos, inicio, datos, confirmacion, i18n] = await Promise.all([
+    leer("src/components/reservar/WizardSteps.tsx"),
+    leer("src/pages/ReservarInicioPage.tsx"),
+    leer("src/pages/ReservarDatosPage.tsx"),
+    leer("src/pages/ConfirmacionPage.tsx"),
+    leer("src/i18n/index.ts"),
+  ]);
+
+  assert.match(pasos, /aria-current=\{actual \? "step"/);
+  assert.match(pasos, /reservar\.progreso/);
+
+  assert.match(inicio, /isError/);
+  assert.match(inicio, /onClick=\{\(\) => refetch\(\)\}/);
+  assert.match(inicio, /reservar\.errorConsultaCierresTitulo/);
+
+  assert.match(datos, /role="alert"/);
+  assert.match(datos, /reservar\.resumenSolicitud/);
+  assert.match(datos, /errorEnvio \? t\("reservar\.reintentarEnvio"\)/);
+  assert.match(datos, /autoComplete="name"/);
+  assert.match(datos, /autoComplete="email"/);
+  assert.match(datos, /autoComplete="tel"/);
+
+  assert.match(confirmacion, /confirmacion\.queSigue/);
+  assert.match(confirmacion, /confirmacion\.guardarFolio/);
+  assert.match(i18n, /reservaUxEs/);
+  assert.match(i18n, /reservaUxEn/);
+});
+
 test("sessionStorage guarda progreso, nunca datos personales", async () => {
   const contexto = await leer("src/context/ReservaContext.tsx");
   const inicioPick = contexto.indexOf("type EstadoPersistible");
