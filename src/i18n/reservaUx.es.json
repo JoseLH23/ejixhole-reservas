@@ -1,0 +1,24 @@
+{
+  "reservar": {
+    "progreso": "Paso {{actual}} de {{total}}",
+    "datosTitulo": "Revisa tu visita y comparte tus datos",
+    "datosDescripcion": "Confirma que la selección sea correcta. Tus datos se usarán para dar seguimiento a esta solicitud.",
+    "resumenSolicitud": "Tu selección",
+    "editarSeleccion": "Editar",
+    "fechasSeleccionadas": "Fechas",
+    "datosProtegidos": "Tus datos de contacto no se guardan en el almacenamiento del navegador. Solo se envían cuando confirmas la solicitud.",
+    "errorConsultaCierresTitulo": "No pudimos consultar los cierres programados",
+    "errorConsultaCierresDescripcion": "Puedes continuar eligiendo tu visita. La disponibilidad y el precio se volverán a validar antes de enviar la solicitud.",
+    "reintentar": "Volver a intentar",
+    "sinConexion": "Parece que no tienes conexión. Tus datos siguen aquí; reconéctate y vuelve a intentar.",
+    "errorEnvioTitulo": "La solicitud todavía no se confirmó",
+    "errorEnvioDescripcion": "Tus datos siguen en el formulario. Revisa tu conexión y vuelve a intentar; usaremos la misma operación para evitar solicitudes duplicadas.",
+    "reintentarEnvio": "Reintentar envío",
+    "enviandoAyuda": "Espera la confirmación y no cierres esta pantalla."
+  },
+  "confirmacion": {
+    "guardarFolio": "Guarda este folio para identificar tu solicitud.",
+    "queSigue": "¿Qué sigue?",
+    "queSigueDescripcion": "El equipo de EjiXhole revisará la solicitud y se pondrá en contacto usando los datos que compartiste."
+  }
+}

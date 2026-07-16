@@ -1,0 +1,24 @@
+{
+  "reservar": {
+    "progreso": "Step {{actual}} of {{total}}",
+    "datosTitulo": "Review your visit and share your details",
+    "datosDescripcion": "Make sure your selection is correct. Your contact details will be used to follow up on this request.",
+    "resumenSolicitud": "Your selection",
+    "editarSeleccion": "Edit",
+    "fechasSeleccionadas": "Dates",
+    "datosProtegidos": "Your contact details are not stored in browser storage. They are only sent when you confirm the request.",
+    "errorConsultaCierresTitulo": "We couldn't check scheduled closures",
+    "errorConsultaCierresDescripcion": "You can keep selecting your visit. Availability and price will be validated again before the request is sent.",
+    "reintentar": "Try again",
+    "sinConexion": "It looks like you're offline. Your details are still here; reconnect and try again.",
+    "errorEnvioTitulo": "The request has not been confirmed yet",
+    "errorEnvioDescripcion": "Your details are still in the form. Check your connection and try again; we'll reuse the same operation to avoid duplicate requests.",
+    "reintentarEnvio": "Retry request",
+    "enviandoAyuda": "Wait for confirmation and keep this screen open."
+  },
+  "confirmacion": {
+    "guardarFolio": "Keep this confirmation number to identify your request.",
+    "queSigue": "What happens next?",
+    "queSigueDescripcion": "The EjiXhole team will review the request and contact you using the details you shared."
+  }
+}
