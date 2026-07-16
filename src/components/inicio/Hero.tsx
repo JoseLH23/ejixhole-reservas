@@ -11,14 +11,6 @@ const INSIGNIAS = [
   { key: "momentos", icon: Heart },
 ] as const;
 
-/**
- * Diseño de 2 paneles a propósito: el texto/CTA vive en un fondo
- * sólido de marca (nunca depende de la nitidez de una foto), y la
- * foto vive en SU PROPIO panel más pequeño — un recorte dentro de un
- * marco chico se ve intencional; la misma foto estirada de borde a
- * borde se veía como error. Cuando lleguen fotos en alta resolución,
- * el panel de la derecha es lo único que hay que reemplazar.
- */
 export function Hero() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -26,24 +18,24 @@ export function Hero() {
   return (
     <section className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-8">
       <div className="grid grid-cols-1 overflow-hidden rounded-2xl shadow-xl md:grid-cols-5">
-        {/* Panel de texto — ahora más angosto (2 de 5 columnas, antes 3),
-            y con una foto real tenue de fondo en vez de color sólido plano */}
         <div className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary p-6 sm:p-8 md:col-span-2">
-          <img
-            src="/gallery/rio-2.jpg"
-            alt=""
+          <div
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-overlay"
+            className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-white/10 blur-3xl"
           />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-28 -left-16 h-72 w-72 rounded-full bg-secondary/40 blur-3xl"
+          />
+
           <div className="relative z-10">
             <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-white/80">
-              <MapPin className="h-3.5 w-3.5" />
+              <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
               {t("footer.ubicacion")}
             </p>
 
-            {/* Confianza inmediata: calificación real, visible desde el primer segundo */}
             <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 backdrop-blur-sm">
-              <Star className="h-3.5 w-3.5 fill-yellow-300 text-yellow-300" />
+              <Star className="h-3.5 w-3.5 fill-yellow-300 text-yellow-300" aria-hidden="true" />
               <span className="text-xs font-semibold text-white">4.7</span>
               <span className="text-xs text-white/80">{t("hero.calificacion")}</span>
             </div>
@@ -56,11 +48,12 @@ export function Hero() {
 
             <div className="mt-5 flex flex-wrap gap-2.5">
               <button
+                type="button"
                 onClick={() => navigate("/reservar")}
                 className="group inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-medium text-primary shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-all hover:scale-[1.03] active:scale-[0.98]"
               >
                 {t("hero.boton")}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </button>
               <a
                 href="#actividades"
@@ -75,7 +68,7 @@ export function Hero() {
             {INSIGNIAS.map(({ key, icon: Icon }) => (
               <div key={key} className="flex items-center gap-1.5 text-xs font-medium text-white/90">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/40">
-                  <Icon className="h-3 w-3" />
+                  <Icon className="h-3 w-3" aria-hidden="true" />
                 </span>
                 {t(`hero.insignias.${key}`)}
               </div>
@@ -83,11 +76,13 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Panel de foto — ahora 3 de 5 columnas (antes 2), más protagonismo */}
         <div className="relative min-h-[16rem] overflow-hidden bg-foreground md:col-span-3 md:min-h-0">
           <img
             src="/gallery/hero-principal.jpg"
             alt="Cascada y alberca de aguas turquesa en EjiXhole"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent md:bg-gradient-to-l" />
