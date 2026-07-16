@@ -6,7 +6,7 @@
     "resumenSolicitud": "Your selection",
     "editarSeleccion": "Edit",
     "fechasSeleccionadas": "Dates",
-    "datosProtegidos": "Your contact details are not stored in the browser. They are only sent when you confirm the request.",
+    "datosProtegidos": "Your contact details are not stored in browser storage. They are only sent when you confirm the request.",
     "errorConsultaCierresTitulo": "We couldn't check scheduled closures",
     "errorConsultaCierresDescripcion": "You can keep selecting your visit. Availability and price will be validated again before the request is sent.",
     "reintentar": "Try again",
