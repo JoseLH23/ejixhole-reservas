@@ -3,6 +3,7 @@ import type {
   CotizacionResponse,
   DisponibilidadResponse,
   FechaBloqueadaPublica,
+  PeriodoNoDisponible,
   ReservacionPublicaCreate,
   ReservacionPublicaResponse,
   ServicioPublico,
@@ -21,11 +22,17 @@ export const publicoApi = {
     return data;
   },
 
-  getFechasBloqueadas: async (params: {
+  getFechasBloqueadas: async (params: { desde: string; hasta: string }): Promise<FechaBloqueadaPublica[]> => {
+    const { data } = await apiClient.get("/publico/fechas-bloqueadas", { params });
+    return data;
+  },
+
+  getDisponibilidadCalendario: async (params: {
+    unidad_hospedaje_id: number;
     desde: string;
     hasta: string;
-  }): Promise<FechaBloqueadaPublica[]> => {
-    const { data } = await apiClient.get("/publico/fechas-bloqueadas", { params });
+  }): Promise<PeriodoNoDisponible[]> => {
+    const { data } = await apiClient.get("/publico/disponibilidad-calendario", { params });
     return data;
   },
 

@@ -1,14 +1,10 @@
-/**
- * Refleja app/schemas/publico.py del backend tal cual — no se inventa
- * ningún campo que el backend no devuelva.
- */
-
+/** Refleja app/schemas/publico.py del backend. */
 export type TipoReservacion = "entrada" | "camping" | "hospedaje";
 
 export interface ServicioPublico {
   nombre: string;
   descripcion: string | null;
-  precio: string; // Decimal serializado como string
+  precio: string;
 }
 
 export interface UnidadHospedajePublico {
@@ -25,6 +21,14 @@ export interface DisponibilidadResponse {
 export interface FechaBloqueadaPublica {
   fecha_inicio: string;
   fecha_fin: string;
+}
+
+export type MotivoNoDisponible = "ocupado" | "bloqueado";
+
+export interface PeriodoNoDisponible {
+  fecha_inicio: string;
+  fecha_fin: string;
+  motivo: MotivoNoDisponible;
 }
 
 export interface ConceptoPrecio {
@@ -44,7 +48,7 @@ export interface ReservacionPublicaCreate {
   email: string;
   telefono: string;
   tipo_reservacion: TipoReservacion;
-  fecha_llegada: string; // yyyy-MM-dd
+  fecha_llegada: string;
   fecha_salida: string;
   num_personas: number;
   unidad_hospedaje_id?: number | null;
