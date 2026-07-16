@@ -9,6 +9,7 @@ import { ArrowLeft, ArrowRight, User, Mail, Phone, MessageSquare } from "lucide-
 import { useReserva } from "@/context/ReservaContext";
 import { publicoApi } from "@/api/publico";
 import { generarIdempotencyKey } from "@/lib/idempotencyKey";
+import { construirPayloadReserva, crearControlIdempotencia } from "@/lib/reservaPayload";
 import { WizardSteps } from "@/components/reservar/WizardSteps";
 
 const schema = z.object({
@@ -27,13 +28,7 @@ export function ReservarDatosPage() {
   const { estado, actualizar, reiniciar } = useReserva();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
-  // AL-04: la MISMA key se conserva hasta que el backend confirme éxito.
-  // Si hay timeout, pérdida de red o respuesta 5xx, no sabemos si la
-  // reservación alcanzó a guardarse. Reintentar con la misma key permite
-  // que el backend devuelva la operación original en vez de duplicarla.
-  // El backend libera la key cuando la operación falla realmente, así que
-  // también es seguro reutilizarla después de un error de negocio.
-  const idempotencyKeyRef = React.useRef(generarIdempotencyKey());
+  const idempotenciaRef = React.useRef(crearControlIdempotencia(generarIdempotencyKey));
 
   const {
     register,
@@ -51,16 +46,11 @@ export function ReservarDatosPage() {
     },
   });
 
-  // ME-10: quiereCombi sí se persiste en sessionStorage (no es PII),
-  // así que hay que reflejar el checkbox en ReservaContext apenas
-  // cambia — si no, la reserva persistida queda con el valor viejo
-  // aunque el visitante haya marcado la casilla.
   const quiereCombi = watch("quiereCombi");
   React.useEffect(() => {
     actualizar({ quiereCombi });
   }, [quiereCombi, actualizar]);
 
-  // Si alguien llega aquí directo (sin pasar por el paso 1), lo regresamos.
   React.useEffect(() => {
     if (!estado.tipoReservacion || !estado.fechaLlegada || !estado.fechaSalida) {
       navigate("/reservar", { replace: true });
@@ -73,37 +63,16 @@ export function ReservarDatosPage() {
     setEnviando(true);
     setErrorEnvio(null);
 
-    const notasFinales = valores.quiereCombi
-      ? `${valores.notas ?? ""}\n\n[Solicita información de transporte en combi]`.trim()
-      : valores.notas || null;
-
     try {
-      const respuesta = await publicoApi.crearReservacion(
-        {
-          nombre_completo: valores.nombreCompleto,
-          email: valores.email,
-          telefono: valores.telefono,
-          tipo_reservacion: estado.tipoReservacion,
-          fecha_llegada: estado.fechaLlegada,
-          fecha_salida: estado.fechaSalida,
-          num_personas: estado.numPersonas,
-          unidad_hospedaje_id: estado.unidadHospedajeId,
-          notas: notasFinales,
-        },
-        idempotencyKeyRef.current
-      );
+      const payload = construirPayloadReserva(estado, valores);
+      const respuesta = await publicoApi.crearReservacion(payload, idempotenciaRef.current.actual());
 
-      // Reservación confirmada por el backend: se limpia el wizard
-      // (memoria + sessionStorage) de una vez, ya no hay progreso que
-      // conservar.
       reiniciar();
-
-      idempotencyKeyRef.current = generarIdempotencyKey();
+      idempotenciaRef.current.confirmarExito();
       navigate("/reservar/confirmacion", { state: { respuesta } });
     } catch (err: any) {
-      // No se renueva la key: el resultado puede ser incierto. Un retry
-      // debe usar la misma identidad para que el backend pueda deduplicar
-      // o devolver la respuesta ya guardada.
+      // La clave no cambia: un timeout puede haber guardado la reservación.
+      // El reintento recuperará el mismo resultado en vez de duplicarlo.
       setErrorEnvio(err?.response?.data?.detail ?? t("errores.generico"));
     } finally {
       setEnviando(false);
@@ -117,89 +86,89 @@ export function ReservarDatosPage() {
       </div>
 
       <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <WizardSteps pasoActual={2} />
+        <WizardSteps pasoActual={2} />
 
-      <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-            <User className="h-3.5 w-3.5 text-muted-foreground" />
-            {t("reservar.nombreCompleto")}
-          </label>
-          <input
-            {...register("nombreCompleto")}
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-          {errors.nombreCompleto && <p className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
-        </div>
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <User className="h-3.5 w-3.5 text-muted-foreground" />
+              {t("reservar.nombreCompleto")}
+            </label>
+            <input
+              {...register("nombreCompleto")}
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            {errors.nombreCompleto && <p className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
+          </div>
 
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-            <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-            {t("reservar.email")}
-          </label>
-          <input
-            type="email"
-            {...register("email")}
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-          {errors.email && <p className="mt-1 text-xs text-destructive">{t("errores.emailInvalido")}</p>}
-        </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+              {t("reservar.email")}
+            </label>
+            <input
+              type="email"
+              {...register("email")}
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            {errors.email && <p className="mt-1 text-xs text-destructive">{t("errores.emailInvalido")}</p>}
+          </div>
 
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-            <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-            {t("reservar.telefono")}
-          </label>
-          <input
-            {...register("telefono")}
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-          {errors.telefono && <p className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
-        </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+              {t("reservar.telefono")}
+            </label>
+            <input
+              {...register("telefono")}
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            {errors.telefono && <p className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
+          </div>
 
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-            <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
-            {t("reservar.notas")}
-          </label>
-          <textarea
-            {...register("notas")}
-            rows={3}
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-        </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+              {t("reservar.notas")}
+            </label>
+            <textarea
+              {...register("notas")}
+              rows={3}
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
 
-        <div className="rounded-lg border border-border bg-card p-4">
-          <label className="flex items-start gap-2.5 text-sm">
-            <input type="checkbox" {...register("quiereCombi")} className="mt-0.5 h-4 w-4" />
-            <span>
-              <span className="font-medium text-foreground">{t("reservar.combi.checkbox")}</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">{t("reservar.combi.descripcion")}</p>
-            </span>
-          </label>
-        </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <label className="flex items-start gap-2.5 text-sm">
+              <input type="checkbox" {...register("quiereCombi")} className="mt-0.5 h-4 w-4" />
+              <span>
+                <span className="font-medium text-foreground">{t("reservar.combi.checkbox")}</span>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t("reservar.combi.descripcion")}</p>
+              </span>
+            </label>
+          </div>
 
-        {errorEnvio && <p className="text-sm text-destructive">{errorEnvio}</p>}
+          {errorEnvio && <p className="text-sm text-destructive">{errorEnvio}</p>}
 
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => navigate("/reservar")}
-            className="flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {t("reservar.atras")}
-          </button>
-          <button
-            type="submit"
-            disabled={enviando}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground disabled:opacity-60"
-          >
-            {enviando ? t("reservar.enviando") : t("reservar.enviarSolicitud")}
-            {!enviando && <ArrowRight className="h-4 w-4" />}
-          </button>
-        </div>
-      </form>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/reservar")}
+              className="flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t("reservar.atras")}
+            </button>
+            <button
+              type="submit"
+              disabled={enviando}
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground disabled:opacity-60"
+            >
+              {enviando ? t("reservar.enviando") : t("reservar.enviarSolicitud")}
+              {!enviando && <ArrowRight className="h-4 w-4" />}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
