@@ -1,16 +1,10 @@
 import axios from "axios";
 
 /**
- * URL del backend real — mismo backend que usa el Experience OS
- * interno. En desarrollo apunta a localhost:8000; en producción se
- * define con la variable de entorno VITE_API_URL al hacer el build.
- *
- * ME-15 (auditoría de seguridad 13/jul/2026): antes, si faltaba
- * VITE_API_URL en un build de producción, el sitio apuntaba en
- * silencio a localhost:8000 — el portal público quedaba
- * completamente roto sin ningún error claro de por qué. Ahora falla
- * fuerte al cargar la app en producción si falta, en vez de fallar
- * tarde y en silencio cuando alguien intenta reservar.
+ * URL del backend real — mismo backend que usa el Experience OS interno.
+ * En desarrollo apunta a localhost:8000; en producción se define con
+ * VITE_API_URL. El cliente agrega automáticamente /api/v1 para consumir el
+ * contrato estable del portal.
  */
 const URL_BASE = import.meta.env.VITE_API_URL;
 
@@ -20,11 +14,13 @@ if (!URL_BASE && import.meta.env.PROD) {
   );
 }
 
+function conApiV1(base: string): string {
+  const normalizada = base.replace(/\/+$/, "");
+  return normalizada.endsWith("/api/v1") ? normalizada : `${normalizada}/api/v1`;
+}
+
 export const apiClient = axios.create({
-  baseURL: URL_BASE || "http://localhost:8000", // el fallback solo aplica en desarrollo local
+  baseURL: conApiV1(URL_BASE || "http://localhost:8000"),
   headers: { "Content-Type": "application/json" },
-  // ME-07 (auditoría de seguridad 13/jul/2026): sin timeout, una
-  // cotización o reserva podía quedar "pendiente" indefinidamente en
-  // el navegador del visitante — llevando a reenvíos y duplicados.
   timeout: 15_000,
 });
