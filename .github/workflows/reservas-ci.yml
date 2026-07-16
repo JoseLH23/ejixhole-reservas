@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    name: Probar y compilar
+    name: Probar, compilar y medir
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -38,3 +38,6 @@ jobs:
 
       - name: Compilar proyecto
         run: npm run build
+
+      - name: Verificar presupuesto de rendimiento
+        run: npm run performance:check
