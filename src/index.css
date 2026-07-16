@@ -10,12 +10,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/*
-  Ken Burns muy sutil — zoom lento de 20s. A propósito discreto (105%
-  máximo, no más): un zoom agresivo sobre una foto de baja resolución
-  se ve peor, no mejor. Cuando lleguen fotos en alta resolución, este
-  mismo efecto se va a ver espectacular sin cambiar nada de código.
-*/
 @keyframes ken-burns {
   0% {
     transform: scale(1);
@@ -29,7 +23,6 @@ body {
   animation: ken-burns 20s ease-out forwards;
 }
 
-/* Aparición al hacer scroll — se activa agregando la clase "visible" vía IntersectionObserver (ver useScrollReveal.ts) */
 .scroll-reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -39,4 +32,26 @@ body {
 .scroll-reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/*
+  El navegador puede omitir pintura y layout de contenido lejano hasta que se
+  acerque al viewport. La altura intrínseca evita saltos bruscos al activarlo.
+*/
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-ken-burns,
+  .scroll-reveal {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
 }
