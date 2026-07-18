@@ -59,7 +59,7 @@ test("confirma una solicitud y envía el contrato esperado al backend", async ({
   await page.getByRole("button", { name: "Enviar solicitud" }).click();
 
   await expect(page).toHaveURL(/\/reservar\/confirmacion$/);
-  await expect(page.getByText("#321")).toBeVisible();
+  await expect(page.getByText("#321", { exact: true })).toBeVisible();
   expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
   expect(solicitud).toEqual({
     nombre_completo: "Visitante de Prueba",
