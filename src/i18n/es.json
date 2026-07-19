@@ -1,7 +1,12 @@
 {
   "nav": {
     "inicio": "Inicio",
-    "reservar": "Reservar"
+    "reservar": "Reservar",
+    "saltarContenido": "Saltar al contenido",
+    "navegacionPrincipal": "Navegación principal",
+    "selectorIdioma": "Seleccionar idioma",
+    "espanol": "Español",
+    "ingles": "English"
   },
   "hero": {
     "titulo": "EjiXhole",
@@ -92,6 +97,10 @@
   "galeria": {
     "titulo": "Descubre la magia de EjiXhole",
     "descripcion": "Momentos reales de quienes ya nos visitaron.",
+    "visor": "Visor de fotografías",
+    "cerrar": "Cerrar",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente",
     "categorias": {
       "todas": "Todas",
       "rio": "Río",
