@@ -3,6 +3,7 @@ import type {
   CotizacionResponse,
   DisponibilidadResponse,
   FechaBloqueadaPublica,
+  FormChallengeResponse,
   PeriodoNoDisponible,
   ReservacionPublicaCreate,
   ReservacionPublicaResponse,
@@ -53,6 +54,13 @@ export const publicoApi = {
     unidad_hospedaje_id?: number | null;
   }): Promise<CotizacionResponse> => {
     const { data } = await apiClient.get("/publico/cotizar", { params });
+    return data;
+  },
+
+  getFormChallenge: async (): Promise<FormChallengeResponse> => {
+    const { data } = await apiClient.get("/publico/form-challenge", {
+      headers: { "Cache-Control": "no-store" },
+    });
     return data;
   },
 
