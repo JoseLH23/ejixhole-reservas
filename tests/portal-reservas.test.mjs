@@ -193,3 +193,18 @@ test("la accesibilidad crítica queda protegida por código y Chromium", async (
   assert.match(workflow, /@axe-core\/playwright@4\.12\.1/);
   assert.match(auditoria, /wcag22aa/);
 });
+
+test("el smoke desplegado ejecuta React y detecta configuración faltante", async () => {
+  const [workflow, smoke] = await Promise.all([
+    leer(".github/workflows/post-deploy-smoke.yml"),
+    leer("scripts/post-deploy-smoke.mjs"),
+  ]);
+
+  assert.match(workflow, /node scripts\/post-deploy-smoke\.mjs/);
+  assert.match(workflow, /playwright install --with-deps chromium/);
+  assert.match(workflow, /if: always\(\)/);
+  assert.match(smoke, /page\.on\("pageerror"/);
+  assert.match(smoke, /VITE_API_URL/);
+  assert.match(smoke, /\/reservar/);
+  assert.match(smoke, /Visita de un día/);
+});
