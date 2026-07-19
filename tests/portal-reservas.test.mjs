@@ -166,3 +166,28 @@ test("sessionStorage guarda progreso, nunca datos personales", async () => {
   assert.match(contexto, /sessionStorage\.removeItem/);
   assert.doesNotMatch(definicionPersistible, /nombreCompleto|email|telefono|notas/);
 });
+
+test("la accesibilidad crítica queda protegida por código y Chromium", async () => {
+  const [layout, header, datos, calendario, lightbox, workflow, auditoria] = await Promise.all([
+    leer("src/components/layout/Layout.tsx"),
+    leer("src/components/layout/Header.tsx"),
+    leer("src/pages/ReservarDatosPage.tsx"),
+    leer("src/components/reservar/CalendarioFecha.tsx"),
+    leer("src/components/shared/Lightbox.tsx"),
+    leer(".github/workflows/e2e.yml"),
+    leer("e2e/accesibilidad.spec.mjs"),
+  ]);
+
+  assert.match(layout, /href="#contenido-principal"/);
+  assert.match(layout, /tabIndex=\{-1\}/);
+  assert.match(header, /document\.documentElement\.lang/);
+  assert.match(header, /aria-pressed=\{i18n\.language/);
+  assert.match(datos, /htmlFor="nombre-completo"/);
+  assert.match(datos, /aria-describedby=\{errors\.email/);
+  assert.match(calendario, /aria-controls=\{abierto/);
+  assert.match(calendario, /event\.key !== "Escape"/);
+  assert.match(lightbox, /focoAnterior\?\.focus\(\)/);
+  assert.match(lightbox, /e\.key === "Tab"/);
+  assert.match(workflow, /@axe-core\/playwright@4\.12\.1/);
+  assert.match(auditoria, /wcag22aa/);
+});
