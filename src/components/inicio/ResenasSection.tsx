@@ -28,7 +28,7 @@ const TOTAL_OPINIONES = 23;
 
 function Estrellas({ cantidad, tamano = "h-3.5 w-3.5" }: { cantidad: number; tamano?: string }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div aria-hidden="true" className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
         <Star key={i} className={`${tamano} ${i < cantidad ? "fill-wood text-wood" : "text-border"}`} />
       ))}
@@ -78,8 +78,9 @@ export function ResenasSection() {
 
         <div className="mt-6 flex items-center gap-3">
           <button
+            type="button"
             onClick={anterior}
-            aria-label="Anterior"
+            aria-label={t("resenas.anterior")}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-accent"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -92,8 +93,9 @@ export function ResenasSection() {
           </div>
 
           <button
+            type="button"
             onClick={siguiente}
-            aria-label="Siguiente"
+            aria-label={t("resenas.siguiente")}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-accent"
           >
             <ChevronRight className="h-4 w-4" />
@@ -104,10 +106,17 @@ export function ResenasSection() {
           {RESENAS_REALES.map((r, i) => (
             <button
               key={r.autor}
+              type="button"
               onClick={() => setIndice(i)}
-              aria-label={`Ir a la reseña ${i + 1}`}
-              className={`h-1.5 rounded-full transition-all ${i === indice ? "w-5 bg-primary" : "w-1.5 bg-border"}`}
-            />
+              aria-label={t("resenas.irA", { numero: i + 1 })}
+              aria-current={i === indice ? "true" : undefined}
+              className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-accent"
+            >
+              <span
+                aria-hidden="true"
+                className={`h-1.5 rounded-full transition-all ${i === indice ? "w-5 bg-primary" : "w-1.5 bg-border"}`}
+              />
+            </button>
           ))}
         </div>
       </div>

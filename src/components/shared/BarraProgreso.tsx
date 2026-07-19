@@ -15,7 +15,7 @@ export function BarraProgreso() {
   }, []);
 
   return (
-    <div className="fixed left-0 top-0 z-50 h-1 w-full bg-transparent">
+    <div aria-hidden="true" className="fixed left-0 top-0 z-50 h-1 w-full bg-transparent">
       <div
         className="h-full bg-gradient-to-r from-primary to-secondary transition-[width] duration-150 ease-out"
         style={{ width: `${progreso}%` }}

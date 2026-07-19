@@ -204,56 +204,63 @@ export function ReservarDatosPage() {
           </div>
 
           <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+            <label htmlFor="nombre-completo" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
               <User className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
               {t("reservar.nombreCompleto")}
             </label>
             <input
+              id="nombre-completo"
               {...register("nombreCompleto")}
               autoComplete="name"
               aria-invalid={Boolean(errors.nombreCompleto)}
+              aria-describedby={errors.nombreCompleto ? "nombre-completo-error" : undefined}
               className="w-full rounded-lg border border-border px-3 py-3 text-base transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:text-sm"
             />
-            {errors.nombreCompleto && <p className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
+            {errors.nombreCompleto && <p id="nombre-completo-error" className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
           </div>
 
           <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+            <label htmlFor="email" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
               <Mail className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
               {t("reservar.email")}
             </label>
             <input
+              id="email"
               type="email"
               {...register("email")}
               autoComplete="email"
               inputMode="email"
               aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
               className="w-full rounded-lg border border-border px-3 py-3 text-base transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:text-sm"
             />
-            {errors.email && <p className="mt-1 text-xs text-destructive">{t("errores.emailInvalido")}</p>}
+            {errors.email && <p id="email-error" className="mt-1 text-xs text-destructive">{t("errores.emailInvalido")}</p>}
           </div>
 
           <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+            <label htmlFor="telefono" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
               <Phone className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
               {t("reservar.telefono")}
             </label>
             <input
+              id="telefono"
               {...register("telefono")}
               autoComplete="tel"
               inputMode="tel"
               aria-invalid={Boolean(errors.telefono)}
+              aria-describedby={errors.telefono ? "telefono-error" : undefined}
               className="w-full rounded-lg border border-border px-3 py-3 text-base transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:text-sm"
             />
-            {errors.telefono && <p className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
+            {errors.telefono && <p id="telefono-error" className="mt-1 text-xs text-destructive">{t("errores.campoRequerido")}</p>}
           </div>
 
           <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+            <label htmlFor="notas" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
               <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
               {t("reservar.notas")}
             </label>
             <textarea
+              id="notas"
               {...register("notas")}
               rows={3}
               className="w-full rounded-lg border border-border px-3 py-3 text-base transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:text-sm"
