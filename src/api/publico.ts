@@ -1,4 +1,10 @@
 import { apiClient } from "./client";
+import {
+  confirmarFormularioSeguro,
+  precargarFormularioSeguro,
+  prepararFormularioSeguro,
+} from "@/lib/formularioSeguro";
+import { obtenerPublicClientId } from "@/lib/publicClientId";
 import type {
   CotizacionResponse,
   DisponibilidadResponse,
@@ -10,6 +16,8 @@ import type {
   TipoReservacion,
   UnidadHospedajePublico,
 } from "@/types/publico";
+
+precargarFormularioSeguro();
 
 export const publicoApi = {
   getServicios: async (): Promise<ServicioPublico[]> => {
@@ -57,9 +65,19 @@ export const publicoApi = {
   },
 
   crearReservacion: async (payload: ReservacionPublicaCreate, idempotencyKey?: string): Promise<ReservacionPublicaResponse> => {
-    const { data } = await apiClient.post("/publico/reservaciones", payload, {
-      headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : undefined,
-    });
+    const clave = idempotencyKey ?? `envio-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const challenge = await prepararFormularioSeguro(clave);
+    const headers: Record<string, string> = {
+      "X-Public-Client": obtenerPublicClientId(),
+    };
+    if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
+
+    const { data } = await apiClient.post(
+      "/publico/reservaciones",
+      { ...payload, form_challenge: challenge },
+      { headers }
+    );
+    confirmarFormularioSeguro(clave);
     return data;
   },
 };
