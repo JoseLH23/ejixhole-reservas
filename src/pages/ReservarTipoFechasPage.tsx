@@ -247,6 +247,7 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
                 type="button"
                 onClick={() => !proximamente && seleccionarTipo(tipo)}
                 disabled={proximamente}
+                aria-pressed={proximamente ? undefined : seleccionado}
                 className={cn(
                   "relative flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200",
                   proximamente
@@ -261,14 +262,14 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
                     {t("reservar.proximamente")}
                   </span>
                 )}
-                {seleccionado && !proximamente && <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-primary" />}
+                {seleccionado && !proximamente && <CheckCircle2 aria-hidden="true" className="absolute right-3 top-3 h-5 w-5 text-primary" />}
                 <div
                   className={cn(
                     "flex h-11 w-11 items-center justify-center rounded-full transition-colors",
                     seleccionado && !proximamente ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon aria-hidden="true" className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="font-medium text-foreground">{t(`reservar.tipo.${tipo}`)}</p>
@@ -289,8 +290,8 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
         {estado.tipoReservacion && (
           <div className="mt-8 space-y-5">
             {estado.tipoReservacion === "hospedaje" && unidades && (
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">{t("reservar.elegirUnidad")}</label>
+              <fieldset>
+                <legend className="mb-1.5 block text-sm font-medium text-foreground">{t("reservar.elegirUnidad")}</legend>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   {unidades.map((unidad) => {
                     const seleccionada = estado.unidadHospedajeId === unidad.id;
@@ -299,12 +300,13 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
                         key={unidad.id}
                         type="button"
                         onClick={() => actualizar({ unidadHospedajeId: unidad.id })}
+                        aria-pressed={seleccionada}
                         className={cn(
                           "relative rounded-lg border p-3 text-left text-sm transition-all",
                           seleccionada ? "border-primary bg-primary/5 shadow-sm" : "border-border hover:border-primary/40 hover:bg-accent"
                         )}
                       >
-                        {seleccionada && <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-primary" />}
+                        {seleccionada && <CheckCircle2 aria-hidden="true" className="absolute right-2 top-2 h-4 w-4 text-primary" />}
                         <p className="font-medium">{unidad.nombre}</p>
                         <p className="text-xs text-muted-foreground">
                           ${Number(unidad.precio_por_noche).toFixed(0)} · {t("reservar.maximoPersonas", { max: unidad.capacidad_maxima })}
@@ -313,7 +315,7 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
                     );
                   })}
                 </div>
-              </div>
+              </fieldset>
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -352,13 +354,16 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
             </div>
 
             <div className="max-w-[220px]">
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
-                <Users className="h-3.5 w-3.5 text-muted-foreground" />
+              <label htmlFor="numero-personas" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
+                <Users aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
                 {t("reservar.numPersonas")}
               </label>
               <input
+                id="numero-personas"
                 type="number"
                 min={1}
+                aria-describedby={unidadSeleccionada ? "capacidad-unidad" : undefined}
+                aria-invalid={excedeCapacidad}
                 value={personasTexto}
                 onChange={(e) => {
                   const crudo = e.target.value;
@@ -380,7 +385,7 @@ export function ReservarTipoFechasPage({ bloqueos = [] }: ReservarTipoFechasPage
                 )}
               />
               {unidadSeleccionada && (
-                <p className={cn("mt-1 text-xs", excedeCapacidad ? "font-medium text-destructive" : "text-muted-foreground")}>
+                <p id="capacidad-unidad" className={cn("mt-1 text-xs", excedeCapacidad ? "font-medium text-destructive" : "text-muted-foreground")}>
                   {t("reservar.maximoPersonas", { max: unidadSeleccionada.capacidad_maxima })}
                 </p>
               )}
