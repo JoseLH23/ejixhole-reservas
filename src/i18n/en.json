@@ -1,7 +1,12 @@
 {
   "nav": {
     "inicio": "Home",
-    "reservar": "Book Now"
+    "reservar": "Book Now",
+    "saltarContenido": "Skip to content",
+    "navegacionPrincipal": "Main navigation",
+    "selectorIdioma": "Select language",
+    "espanol": "Español",
+    "ingles": "English"
   },
   "hero": {
     "titulo": "EjiXhole",
@@ -92,6 +97,10 @@
   "galeria": {
     "titulo": "Discover the magic of EjiXhole",
     "descripcion": "Real moments from the people who've already visited.",
+    "visor": "Photo viewer",
+    "cerrar": "Close",
+    "anterior": "Previous",
+    "siguiente": "Next",
     "categorias": {
       "todas": "All",
       "rio": "River",
