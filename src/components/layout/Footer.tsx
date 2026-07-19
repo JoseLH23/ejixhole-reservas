@@ -21,7 +21,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 pb-8 sm:grid-cols-3">
           <div>
             <div className="flex items-center gap-2">
-              <img src="/logo.png?v=3" alt="EjiXhole" className="h-8 w-8 rounded-full object-cover" />
+              <img src="/logo.png?v=3" alt="" aria-hidden="true" className="h-8 w-8 rounded-full object-cover" />
               <span className="font-display text-lg font-semibold text-foreground">EjiXhole</span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{t("footer.descripcion")}</p>
@@ -31,16 +31,16 @@ export function Footer() {
             <p className="mb-2 font-medium text-foreground">{t("footer.contacto")}</p>
             <div className="space-y-1.5 text-muted-foreground">
               <a href={`mailto:${CORREO}`} className="flex items-center gap-2 hover:text-primary">
-                <Mail className="h-4 w-4" /> {CORREO}
+                <Mail aria-hidden="true" className="h-4 w-4" /> {CORREO}
               </a>
               <a href={`tel:${TELEFONO.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-primary">
-                <Phone className="h-4 w-4" /> {TELEFONO}
+                <Phone aria-hidden="true" className="h-4 w-4" /> {TELEFONO}
               </a>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-primary">
-                <MessageCircle className="h-4 w-4" /> WhatsApp
+                <MessageCircle aria-hidden="true" className="h-4 w-4" /> WhatsApp
               </a>
               <p className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0" /> {t("footer.ubicacion")}
+                <MapPin aria-hidden="true" className="h-4 w-4 shrink-0" /> {t("footer.ubicacion")}
               </p>
             </div>
           </div>
