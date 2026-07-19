@@ -11,6 +11,7 @@ export interface DatosContactoReserva {
   email: string;
   telefono: string;
   notas?: string;
+  website?: string;
   quiereCombi: boolean;
 }
 
@@ -37,6 +38,7 @@ export function construirPayloadReserva(
     num_personas: estado.numPersonas,
     unidad_hospedaje_id: estado.unidadHospedajeId,
     notas: construirNotasReserva(datos.notas, datos.quiereCombi),
+    website: datos.website ?? "",
   };
 }
 
