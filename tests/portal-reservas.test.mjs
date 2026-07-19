@@ -36,6 +36,7 @@ test("construye el payload público con el contrato exacto del backend", () => {
     num_personas: 3,
     unidad_hospedaje_id: null,
     notas: "Llegamos por la tarde",
+    website: "",
   });
 });
 
@@ -85,6 +86,8 @@ test("el portal conserva cotización, disponibilidad y creación pública", asyn
   assert.match(paginaDatos, /disabled=\{enviando\}/);
   assert.match(paginaDatos, /idempotenciaRef\.current\.actual\(\)/);
   assert.match(paginaDatos, /idempotenciaRef\.current\.confirmarExito\(\)/);
+  assert.match(paginaDatos, /register\("website"\)/);
+  assert.match(paginaDatos, /tabIndex=\{-1\}/);
 });
 
 test("el wizard muestra progreso y permite recuperarse de errores", async () => {
