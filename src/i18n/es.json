@@ -190,7 +190,10 @@
   "resenas": {
     "titulo": "Lo que dicen nuestros visitantes",
     "opiniones": "opiniones en Google Maps",
-    "verTodas": "Ver todas las opiniones"
+    "verTodas": "Ver todas las opiniones",
+    "anterior": "Reseña anterior",
+    "siguiente": "Reseña siguiente",
+    "irA": "Ir a la reseña {{numero}}"
   },
   "consejos": {
     "titulo": "Consejos para tu visita",
