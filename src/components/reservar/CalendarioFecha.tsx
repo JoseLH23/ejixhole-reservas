@@ -51,7 +51,11 @@ export function CalendarioFecha({
   isBlocked,
 }: CalendarioFechaProps) {
   const { estado } = useReserva();
+  const idBase = React.useId();
+  const botonId = `calendario-${idBase}`;
+  const dialogoId = `${botonId}-dialogo`;
   const contenedorRef = React.useRef<HTMLDivElement>(null);
+  const botonRef = React.useRef<HTMLButtonElement>(null);
   const [abierto, setAbierto] = React.useState(false);
   const [mesVisible, setMesVisible] = React.useState(() => startOfMonth(fechaSegura(value ?? min)));
   const hoy = fechaLocalIso(new Date());
@@ -81,6 +85,18 @@ export function CalendarioFecha({
     };
     document.addEventListener("mousedown", cerrar);
     return () => document.removeEventListener("mousedown", cerrar);
+  }, [abierto]);
+
+  React.useEffect(() => {
+    if (!abierto) return;
+    const cerrarConEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setAbierto(false);
+      botonRef.current?.focus();
+    };
+    document.addEventListener("keydown", cerrarConEscape);
+    return () => document.removeEventListener("keydown", cerrarConEscape);
   }, [abierto]);
 
   const primerMes = startOfMonth(fechaSegura(min));
@@ -123,35 +139,38 @@ export function CalendarioFecha({
 
   return (
     <div ref={contenedorRef} className="relative">
-      <label className="mb-1.5 block text-sm font-medium text-foreground">{label}</label>
+      <label htmlFor={botonId} className="mb-1.5 block text-sm font-medium text-foreground">{label}</label>
       <button
+        ref={botonRef}
+        id={botonId}
         type="button"
         aria-haspopup="dialog"
         aria-expanded={abierto}
+        aria-controls={abierto ? dialogoId : undefined}
         onClick={() => setAbierto((actual) => !actual)}
         className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2.5 text-left text-sm transition-colors hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <CalendarDays aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className={cn("truncate", !value && "text-muted-foreground")}>
             {value ? formatoFecha.format(fechaSegura(value)) : label}
           </span>
         </span>
-        <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", abierto && "rotate-180")} />
+        <ChevronDown aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-transform", abierto && "rotate-180")} />
       </button>
 
       {abierto && (
-        <div role="dialog" aria-label={label} className="absolute left-0 z-30 mt-2 w-full min-w-[290px] rounded-xl border border-border bg-card p-3 shadow-xl">
+        <div id={dialogoId} role="dialog" aria-label={label} className="absolute left-0 z-30 mt-2 w-full min-w-[290px] rounded-xl border border-border bg-card p-3 shadow-xl">
           <div className="flex items-center justify-between gap-2">
             <button type="button" disabled={mesVisible.getTime() <= primerMes.getTime()} onClick={() => setMesVisible((actual) => subMonths(actual, 1))} aria-label={formatoMes.format(subMonths(mesVisible, 1))} className="rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-30">
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft aria-hidden="true" className="h-4 w-4" />
             </button>
             <p className="flex items-center gap-2 capitalize text-sm font-semibold text-foreground">
               {formatoMes.format(mesVisible)}
-              {isFetching && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+              {isFetching && <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
             </p>
             <button type="button" disabled={mesVisible.getTime() >= ultimoMes.getTime()} onClick={() => setMesVisible((actual) => addMonths(actual, 1))} aria-label={formatoMes.format(addMonths(mesVisible, 1))} className="rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-30">
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight aria-hidden="true" className="h-4 w-4" />
             </button>
           </div>
 
@@ -173,6 +192,7 @@ export function CalendarioFecha({
                   disabled={deshabilitado}
                   title={motivo ? mensaje : formatoFecha.format(dia)}
                   aria-label={motivo ? `${formatoFecha.format(dia)}. ${mensaje}` : formatoFecha.format(dia)}
+                  aria-pressed={seleccionado}
                   onClick={() => seleccionar(dia)}
                   className={cn(
                     "relative aspect-square rounded-lg text-xs font-medium transition-colors",
