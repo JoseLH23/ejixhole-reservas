@@ -26,7 +26,9 @@ jobs:
         run: |
           node scripts/validate-release.mjs --evidence
           tar -czf release-evidence/ejixhole-reservas-dist.tar.gz dist
-          sha256sum release-evidence/* > release-evidence/SHA256SUMS
+          cd release-evidence
+          sha256sum ejixhole-reservas-dist.tar.gz ejixhole-reservas.json > SHA256SUMS
+          sha256sum -c SHA256SUMS
       - uses: actions/upload-artifact@v7
         with:
           name: reservas-release-evidence-${{ github.ref_name }}
