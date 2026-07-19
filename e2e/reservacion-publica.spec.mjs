@@ -25,7 +25,22 @@ const respuestaExitosa = {
   mensaje: "Solicitud recibida correctamente.",
 };
 
+const desafio = {
+  token: "challenge-e2e-value",
+  issued_at: "2026-07-18T12:00:00Z",
+  expires_at: "2099-01-01T00:00:00Z",
+  minimum_wait_seconds: 0,
+  enforcement_mode: "monitor",
+};
+
 async function prepararPasoDeDatos(page) {
+  await page.route("**/api/v1/publico/form-challenge", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(desafio),
+    });
+  });
   await page.addInitScript((seleccion) => {
     sessionStorage.setItem("ejixhole:reserva-wizard", JSON.stringify(seleccion));
   }, seleccionPersistida);
@@ -42,13 +57,16 @@ async function completarFormulario(page) {
   await page.locator("textarea").fill("Llegaremos por la mañana");
 }
 
-test("confirma una solicitud y envía el contrato esperado al backend", async ({ page }) => {
+test("confirma una solicitud y envía desafío e idempotencia", async ({ page }) => {
   let solicitud;
   let idempotencyKey;
+  let publicClientId;
 
   await page.route("**/api/v1/publico/reservaciones", async (route) => {
     solicitud = route.request().postDataJSON();
-    idempotencyKey = route.request().headers()["idempotency-key"];
+    const headers = route.request().headers();
+    idempotencyKey = headers["idempotency-key"];
+    publicClientId = headers["x-public-client"];
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -63,6 +81,7 @@ test("confirma una solicitud y envía el contrato esperado al backend", async ({
   await expect(page).toHaveURL(/\/reservar\/confirmacion$/);
   await expect(page.getByText("#321", { exact: true })).toBeVisible();
   expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
+  expect(publicClientId).toBeTruthy();
   expect(solicitud).toEqual({
     nombre_completo: "Visitante de Prueba",
     email: "visitante@example.com",
@@ -74,16 +93,19 @@ test("confirma una solicitud y envía el contrato esperado al backend", async ({
     unidad_hospedaje_id: null,
     notas: "Llegaremos por la mañana",
     website: "",
+    form_challenge: "challenge-e2e-value",
   });
 });
 
-test("un fallo temporal conserva la misma clave durante el reintento", async ({ page }) => {
+test("un fallo temporal conserva clave, cuerpo y desafío", async ({ page }) => {
   const claves = [];
+  const cuerpos = [];
   let intentos = 0;
 
   await page.route("**/api/v1/publico/reservaciones", async (route) => {
     intentos += 1;
     claves.push(route.request().headers()["idempotency-key"]);
+    cuerpos.push(route.request().postDataJSON());
 
     if (intentos === 1) {
       await route.fulfill({
@@ -112,4 +134,5 @@ test("un fallo temporal conserva la misma clave durante el reintento", async ({ 
   expect(claves).toHaveLength(2);
   expect(claves[0]).toBeTruthy();
   expect(claves[1]).toBe(claves[0]);
+  expect(cuerpos[1]).toEqual(cuerpos[0]);
 });
