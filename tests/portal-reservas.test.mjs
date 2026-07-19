@@ -168,12 +168,13 @@ test("sessionStorage guarda progreso, nunca datos personales", async () => {
 });
 
 test("la accesibilidad crítica queda protegida por código y Chromium", async () => {
-  const [layout, header, datos, calendario, lightbox, workflow, auditoria] = await Promise.all([
+  const [layout, header, datos, calendario, lightbox, resenas, workflow, auditoria] = await Promise.all([
     leer("src/components/layout/Layout.tsx"),
     leer("src/components/layout/Header.tsx"),
     leer("src/pages/ReservarDatosPage.tsx"),
     leer("src/components/reservar/CalendarioFecha.tsx"),
     leer("src/components/shared/Lightbox.tsx"),
+    leer("src/components/inicio/ResenasSection.tsx"),
     leer(".github/workflows/e2e.yml"),
     leer("e2e/accesibilidad.spec.mjs"),
   ]);
@@ -188,6 +189,7 @@ test("la accesibilidad crítica queda protegida por código y Chromium", async (
   assert.match(calendario, /event\.key !== "Escape"/);
   assert.match(lightbox, /focoAnterior\?\.focus\(\)/);
   assert.match(lightbox, /e\.key === "Tab"/);
+  assert.match(resenas, /className="flex h-6 w-6 items-center justify-center/);
   assert.match(workflow, /@axe-core\/playwright@4\.12\.1/);
   assert.match(auditoria, /wcag22aa/);
 });
