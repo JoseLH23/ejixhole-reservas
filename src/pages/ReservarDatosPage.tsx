@@ -24,6 +24,7 @@ import { publicoApi } from "@/api/publico";
 import { generarIdempotencyKey } from "@/lib/idempotencyKey";
 import { construirPayloadReserva, crearControlIdempotencia } from "@/lib/reservaPayload";
 import { WizardSteps } from "@/components/reservar/WizardSteps";
+import { useFormChallenge } from "@/hooks/useFormChallenge";
 
 const schema = z.object({
   nombreCompleto: z.string().min(1),
@@ -31,6 +32,7 @@ const schema = z.object({
   telefono: z.string().min(1),
   notas: z.string().optional(),
   quiereCombi: z.boolean(),
+  website: z.string().max(200).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -53,6 +55,7 @@ export function ReservarDatosPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { estado, actualizar, reiniciar } = useReserva();
+  const { prepararProteccion } = useFormChallenge();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
   const errorEnvioRef = React.useRef<HTMLDivElement>(null);
@@ -71,6 +74,7 @@ export function ReservarDatosPage() {
       telefono: estado.telefono,
       notas: estado.notas,
       quiereCombi: estado.quiereCombi,
+      website: "",
     },
   });
 
@@ -101,29 +105,29 @@ export function ReservarDatosPage() {
     setErrorEnvio(null);
 
     try {
-      const payload = construirPayloadReserva(estado, valores);
+      const proteccion = await prepararProteccion(valores.website ?? "");
+      const payload = construirPayloadReserva(estado, valores, proteccion);
       const respuesta = await publicoApi.crearReservacion(payload, idempotenciaRef.current.actual());
 
       reiniciar();
       idempotenciaRef.current.confirmarExito();
       navigate("/reservar/confirmacion", { state: { respuesta } });
     } catch (err: unknown) {
-      // La clave no cambia: un timeout puede haber guardado la reservación.
-      // El reintento recuperará el mismo resultado en vez de duplicarlo.
       setErrorEnvio(extraerMensajeError(err, t("errores.generico")));
     } finally {
       setEnviando(false);
     }
   };
 
-  const fechas = estado.fechaLlegada
-    ? estado.fechaLlegada === estado.fechaSalida
-      ? formatearFecha(estado.fechaLlegada, i18n.language)
-      : `${formatearFecha(estado.fechaLlegada, i18n.language)} → ${formatearFecha(
-          estado.fechaSalida!,
-          i18n.language
-        )}`
-    : "—";
+  const fechas =
+    estado.fechaLlegada && estado.fechaSalida
+      ? estado.fechaLlegada === estado.fechaSalida
+        ? formatearFecha(estado.fechaLlegada, i18n.language)
+        : `${formatearFecha(estado.fechaLlegada, i18n.language)} → ${formatearFecha(
+            estado.fechaSalida,
+            i18n.language
+          )}`
+      : "—";
 
   return (
     <div>
@@ -188,6 +192,17 @@ export function ReservarDatosPage() {
           noValidate
           aria-busy={enviando}
         >
+          <div aria-hidden="true" className="absolute -left-[10000px] h-px w-px overflow-hidden">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              {...register("website")}
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           <div>
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
               <User className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
