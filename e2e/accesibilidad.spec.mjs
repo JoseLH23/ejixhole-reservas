@@ -50,6 +50,7 @@ async function esperarSinViolaciones(page) {
 }
 
 test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await simularApiPublica(page);
 });
 
