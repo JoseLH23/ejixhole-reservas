@@ -31,6 +31,8 @@ async function prepararPasoDeDatos(page) {
   }, seleccionPersistida);
   await page.goto("/reservar/datos");
   await expect(page.getByRole("heading", { name: "Revisa tu visita y comparte tus datos" })).toBeVisible();
+  await expect(page.locator('input[name="website"]')).toHaveCount(1);
+  await expect(page.locator('input[name="website"]')).toHaveAttribute("tabindex", "-1");
 }
 
 async function completarFormulario(page) {
@@ -71,6 +73,7 @@ test("confirma una solicitud y envía el contrato esperado al backend", async ({
     num_personas: 2,
     unidad_hospedaje_id: null,
     notas: "Llegaremos por la mañana",
+    website: "",
   });
 });
 

@@ -30,6 +30,7 @@ const schema = z.object({
   email: z.string().min(1).email(),
   telefono: z.string().min(1),
   notas: z.string().optional(),
+  website: z.string().max(200).optional(),
   quiereCombi: z.boolean(),
 });
 
@@ -70,6 +71,7 @@ export function ReservarDatosPage() {
       email: estado.email,
       telefono: estado.telefono,
       notas: estado.notas,
+      website: "",
       quiereCombi: estado.quiereCombi,
     },
   });
@@ -188,6 +190,19 @@ export function ReservarDatosPage() {
           noValidate
           aria-busy={enviando}
         >
+          <div
+            aria-hidden="true"
+            className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+          >
+            <label htmlFor="website">Sitio web</label>
+            <input
+              id="website"
+              {...register("website")}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           <div>
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground">
               <User className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
