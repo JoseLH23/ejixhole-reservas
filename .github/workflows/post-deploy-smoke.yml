@@ -14,8 +14,13 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
       - name: Comprobar sitio y ruta de reservación
         env:
           BASE_URL: ${{ inputs.base_url }}
@@ -24,8 +29,21 @@ jobs:
           curl --fail --silent --show-error --retry 3 --retry-all-errors "$BASE_URL/" > index.html
           grep -qi '<div id="root"' index.html
           grep -qi '<script' index.html
+      - name: Instalar Chromium para el smoke real
+        run: |
+          npm ci
+          npm install --no-save --no-package-lock @playwright/test@1.61.1
+          npx playwright install --with-deps chromium
+      - name: Comprobar que React arranca y la reservación carga
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: node scripts/post-deploy-smoke.mjs
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: reservas-smoke-${{ github.run_id }}
-          path: index.html
+          path: |
+            index.html
+            smoke-artifacts
+          if-no-files-found: ignore
           retention-days: 30
