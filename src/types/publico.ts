@@ -43,6 +43,14 @@ export interface CotizacionResponse {
   desglose: ConceptoPrecio[];
 }
 
+export interface FormChallengeResponse {
+  token: string;
+  issued_at: string;
+  expires_at: string;
+  minimum_wait_seconds: number;
+  enforcement_mode: "monitor" | "enforce";
+}
+
 export interface ReservacionPublicaCreate {
   nombre_completo: string;
   email: string;
@@ -53,6 +61,8 @@ export interface ReservacionPublicaCreate {
   num_personas: number;
   unidad_hospedaje_id?: number | null;
   notas?: string | null;
+  website?: string | null;
+  form_challenge?: string | null;
 }
 
 export interface ReservacionPublicaResponse {
