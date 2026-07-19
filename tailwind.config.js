@@ -16,7 +16,7 @@ export default {
         foreground: "hsl(150 15% 15%)",
         card: "hsl(0 0% 100%)",
         muted: "hsl(40 15% 94%)",
-        "muted-foreground": "hsl(150 8% 45%)",
+        "muted-foreground": "hsl(150 8% 40%)",
         border: "hsl(40 15% 88%)",
         destructive: "hsl(4 62% 46%)",
         success: "hsl(142 50% 36%)",
