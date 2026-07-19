@@ -53,6 +53,7 @@ export interface ReservacionPublicaCreate {
   num_personas: number;
   unidad_hospedaje_id?: number | null;
   notas?: string | null;
+  website?: string;
 }
 
 export interface ReservacionPublicaResponse {
