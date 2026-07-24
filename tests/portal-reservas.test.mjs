@@ -156,6 +156,16 @@ test("el portal limita imágenes iniciales y mide rendimiento real", async () =>
   assert.match(paquete, /"performance:check"/);
 });
 
+test("la galería respeta las filas del grid sin empalmar fotografías", async () => {
+  const galeria = await leer("src/components/inicio/Galeria.tsx");
+
+  assert.match(galeria, /auto-rows-\[8rem\]/);
+  assert.match(galeria, /h-full min-h-0/);
+  assert.match(galeria, /col-span-2 row-span-2/);
+  assert.match(galeria, /col-span-1 row-span-1/);
+  assert.doesNotMatch(galeria, /aspect-square|aspect-\[|min-h-64/);
+});
+
 test("sessionStorage guarda progreso, nunca datos personales", async () => {
   const contexto = await leer("src/context/ReservaContext.tsx");
   const inicioPick = contexto.indexOf("type EstadoPersistible");
