@@ -30,10 +30,10 @@ const LIMITE_INICIAL = 8;
 type Categoria = (typeof CATEGORIAS)[number];
 
 function claseEditorial(indice: number, total: number) {
-  if (total < 4) return "aspect-[4/3]";
-  if (indice === 0) return "col-span-2 row-span-2 aspect-square sm:aspect-auto";
-  if (indice === 1 || indice === 4) return "col-span-1 row-span-2 min-h-64";
-  return "aspect-square";
+  if (total < 4) return "row-span-2";
+  if (indice === 0) return "col-span-2 row-span-2";
+  if (indice === 1 || indice === 4) return "col-span-1 row-span-2";
+  return "col-span-1 row-span-1";
 }
 
 export function Galeria() {
@@ -91,7 +91,7 @@ export function Galeria() {
             type="button"
             onClick={() => setIndiceAbierto(i)}
             aria-label={`${t("galeria.titulo")}: ${t(`galeria.categorias.${categoria}`)}`}
-            className={`group relative overflow-hidden rounded-2xl bg-muted text-left shadow-sm transition-shadow hover:shadow-xl ${claseEditorial(i, fotosVisibles.length)}`}
+            className={`group relative h-full min-h-0 overflow-hidden rounded-2xl bg-muted text-left shadow-sm transition-shadow hover:shadow-xl ${claseEditorial(i, fotosVisibles.length)}`}
           >
             <img
               src={`/gallery/${archivo}.jpg`}
