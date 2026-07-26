@@ -24,6 +24,7 @@ import { publicoApi } from "@/api/publico";
 import { generarIdempotencyKey } from "@/lib/idempotencyKey";
 import { construirPayloadReserva, crearControlIdempotencia } from "@/lib/reservaPayload";
 import { WizardSteps } from "@/components/reservar/WizardSteps";
+import { useFormChallenge } from "@/hooks/useFormChallenge";
 
 const schema = z.object({
   nombreCompleto: z.string().min(1),
@@ -54,6 +55,7 @@ export function ReservarDatosPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { estado, actualizar, reiniciar } = useReserva();
+  const { prepararProteccion } = useFormChallenge();
   const [enviando, setEnviando] = React.useState(false);
   const [errorEnvio, setErrorEnvio] = React.useState<string | null>(null);
   const errorEnvioRef = React.useRef<HTMLDivElement>(null);
@@ -103,7 +105,8 @@ export function ReservarDatosPage() {
     setErrorEnvio(null);
 
     try {
-      const payload = construirPayloadReserva(estado, valores);
+      const proteccion = await prepararProteccion(valores.website ?? "");
+      const payload = construirPayloadReserva(estado, valores, proteccion);
       const respuesta = await publicoApi.crearReservacion(payload, idempotenciaRef.current.actual());
 
       reiniciar();

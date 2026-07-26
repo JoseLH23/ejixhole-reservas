@@ -15,6 +15,11 @@ export interface DatosContactoReserva {
   quiereCombi: boolean;
 }
 
+export interface ProteccionFormularioReserva {
+  website?: string;
+  formChallenge?: string | null;
+}
+
 export function construirNotasReserva(notas: string | undefined, quiereCombi: boolean): string | null {
   if (!quiereCombi) return notas || null;
   return `${notas ?? ""}\n\n[Solicita información de transporte en combi]`.trim();
@@ -22,7 +27,8 @@ export function construirNotasReserva(notas: string | undefined, quiereCombi: bo
 
 export function construirPayloadReserva(
   estado: EstadoReservaParaEnvio,
-  datos: DatosContactoReserva
+  datos: DatosContactoReserva,
+  proteccion?: ProteccionFormularioReserva
 ) {
   if (!estado.tipoReservacion || !estado.fechaLlegada || !estado.fechaSalida) {
     throw new Error("La reservación no tiene tipo y fechas completas.");
@@ -38,7 +44,14 @@ export function construirPayloadReserva(
     num_personas: estado.numPersonas,
     unidad_hospedaje_id: estado.unidadHospedajeId,
     notas: construirNotasReserva(datos.notas, datos.quiereCombi),
-    website: datos.website ?? "",
+    ...(proteccion
+      ? {
+          website: proteccion.website ?? "",
+          form_challenge: proteccion.formChallenge ?? null,
+        }
+      : {
+          website: datos.website ?? "",
+        }),
   };
 }
 
